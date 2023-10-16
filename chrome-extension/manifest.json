@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "BLB Extension",
+  "description": "Blue Letter Bible Extension",
+  "version": "0.1",
+  "content_scripts": [{
+     "matches": ["https://www.blueletterbible.org/*"],
+     "js": ["blue-letter-bible.js"]
+    }],
+  "action": {
+    "default_popup": "hello.html",
+    "default_icon": "hello_extensions.png"
+  }
+}
+
