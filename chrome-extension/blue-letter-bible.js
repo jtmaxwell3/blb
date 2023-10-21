@@ -29,28 +29,29 @@ const observer = new MutationObserver((mutations, observer) => {
             if (header_rows.length == 1) {
                 console.log('Got header row')
                 const header_row = header_rows[0]
-                // Add word for word header to header row.
-                const wordForWordHeader = document.createElement("div")
-                const newTitle = document.createTextNode("Word for Word");
-                wordForWordHeader.appendChild(newTitle);
-                wordForWordHeader.classList = header_row.children[1].classList
+                // Add conjugation header to header row.
+                const conjugationHeader = document.createElement("div")
+                const newTitle = document.createTextNode("Conjugation");
+                conjugationHeader.appendChild(newTitle);
+                conjugationHeader.classList = header_row.children[1].classList
                 header_row.children[4].remove()
                 header_row.children[3].remove()
-                header_row.children[1].after(wordForWordHeader)
+                header_row.children[1].after(conjugationHeader)
                 console.log('Added to header row')
-                // Add word for word element to each row.
+                // Add conjugation element to each row.
                 const rows = mutation.target.getElementsByClassName("row");
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i]
                     const parseDiv = row.children[4].children[0]
-                    const wordForWordDiv = document.createElement("div")
-                    const newContent = document.createTextNode("word for word");
-                    wordForWordDiv.appendChild(newContent);
-                    wordForWordDiv.classList = row.children[1].classList
-                    wordForWordDiv.title = parseDiv.title
+                    const conjugationDiv = document.createElement("div")
+                    const conjugation = conjugate(parseDiv.title)
+                    const conjugationTextNode = document.createTextNode(conjugation);
+                    conjugationDiv.appendChild(conjugationTextNode);
+                    conjugationDiv.classList = row.children[1].classList
+                    conjugationDiv.title = parseDiv.title
                     row.children[4].remove()
                     row.children[3].remove()
-                    row.children[1].after(wordForWordDiv)
+                    row.children[1].after(conjugationDiv)
                     console.log('Added to row')
                 }
             }
@@ -59,6 +60,6 @@ const observer = new MutationObserver((mutations, observer) => {
 });
 // Get all mutations to childList in the subtrees of document.
 observer.observe(document, {
-  // subtree: true,
+  subtree: true,
   childList: true
 });

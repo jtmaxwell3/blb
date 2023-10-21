@@ -6,7 +6,12 @@ def create_strongs_to_english():
     filename = '../../../strongs/hebrew/strongs-hebrew-dictionary.json'
     hebrew_translations = get_strongs_dict_translations(filename)
     hebrew_translation = choose_least_shared_translations(hebrew_translations)
-    # print(hebrew_translation)
+    filename = 'strongs-to-english.js'
+    file = open('strongs-to-english.js', 'w')
+    file.write('var strongs_to_english = ' + str(hebrew_translation) +
+               '\n\nmodule.exports = strongs_to_english;')
+    file.close()
+    print('wrote', filename)
 
 
 def choose_least_shared_translations(translations):
