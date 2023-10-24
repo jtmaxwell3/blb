@@ -5,6 +5,9 @@ if (typeof window === 'undefined') {
 }
 
 function conjugate(description) {
+    if  (!description) {
+        return ""
+    }
     let pos1 = description.search("Transliteration:")
     let pos2 = description.search("Hebrew:")
     let pos3 = description.search("English:")

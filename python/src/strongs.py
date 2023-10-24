@@ -1,17 +1,126 @@
 import json
+import os
+import re
 
+import nltk
+from nltk.stem import WordNetLemmatizer
+nltk.download('wordnet')
 
 def create_strongs_to_english():
     """Create a dictionary from strong's numbers to english."""
     filename = '../../../strongs/hebrew/strongs-hebrew-dictionary.json'
     hebrew_translations = get_strongs_dict_translations(filename)
-    hebrew_translation = choose_least_shared_translations(hebrew_translations)
+    # hebrew_translation = choose_least_shared_translations(hebrew_translations)
+    hebrew_translation = choose_most_frequent_translations(hebrew_translations)
     filename = 'strongs-to-english.js'
     file = open('strongs-to-english.js', 'w')
     file.write('var strongs_to_english = ' + str(hebrew_translation) +
                '\n\nmodule.exports = strongs_to_english;')
     file.close()
     print('wrote', filename)
+
+
+def choose_most_frequent_translations(translations):
+    translation = dict()
+    lemmatizer = WordNetLemmatizer()
+    strongs_to_phrases = create_strongs_to_phrases(lemmatizer)
+    for source in translations:
+        targets = translations[source]
+        if len(targets) == 1:
+            translation[source] = targets[0]
+            continue
+        frequency = dict()
+        if source not in strongs_to_phrases:
+            print('no phrases for', source, 'cannot disambiguate', targets)
+            translation[source] = targets[0]
+            continue
+        phrases = strongs_to_phrases[source]
+        for phrase in phrases:
+            target = get_target_for_phrase(phrase, targets, lemmatizer)
+            if target not in frequency:
+                frequency[target] = 0
+            frequency[target] += 1
+        best_target = None
+        best_frequency = 0
+        for target in frequency:
+            if frequency[target] > best_frequency:
+                best_target = target
+                best_frequency = frequency[target]
+        translation[source] = best_target
+    return translation
+
+
+def get_target_for_phrase(phrase, targets, lemmatizer):
+    best_target = None
+    for target in targets:
+        target = lemmatize_text(target, lemmatizer)
+        if phrase.find(target) != -1:
+            if best_target is None:
+                best_target = target
+            elif target.find(best_target) != -1:
+                # target contains best_target.
+                best_target = target
+            elif best_target.find(target) != -1:
+                # best_target contains target.
+                pass
+            else:
+                print('both', target, 'and', best_target, 'appear in', "'" + phrase + "'")
+    if best_target is None:
+        print('Could not find', targets, 'in', "'" + phrase + "'")
+    return best_target
+
+def create_strongs_to_phrases(lemmatizer=None):
+    directory = '../../../interlinear_bible'
+    dictionary = dict()
+    if not lemmatizer:
+        lemmatizer = WordNetLemmatizer()
+    for filename in os.listdir(directory):
+        fullname = os.path.join(directory, filename)
+        print('Reading', fullname)
+        with open(fullname, 'r') as file:
+            book = json.load(file)
+            for verse in book:
+                for word in verse['verse']:
+                    strongs = word['number']
+                    strongs = strongs[0].upper() + strongs[1:]
+                    if strongs not in dictionary:
+                        dictionary[strongs] = list()
+                    text = word['text']
+                    if text:
+                        lemmatized_text = lemmatize_text(text, lemmatizer)
+                        # print(text, '=>', lemmatized_text)
+                        dictionary[strongs].append(lemmatized_text)
+    return dictionary
+
+
+def lemmatize_text(text, lemmatizer):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    new_text = ''
+    for word in text.split(' '):
+        if new_text:
+            new_text += ' '
+        if len(word) < 3:
+            new_text += word
+            continue
+        noun = lemmatizer.lemmatize(word, 'n')
+        verb = lemmatizer.lemmatize(word, 'v')
+        if verb != word:
+            word = verb
+        elif noun != word and not (word[-1] == 's' and word[-2] == 's'):
+            word = noun
+        elif word.endswith('eth'):
+            for suffix_length in [2, 3]:
+                word2 = word[0:-suffix_length]
+                if len(word2) > 2 and word2[-1] == word2[-2]:
+                    word2 = word2[0:-1]
+                word2 += 's'
+                verb = lemmatizer.lemmatize(word2, 'v')
+                if verb != word2:
+                    word = verb
+                    break
+        new_text += word
+    return new_text
 
 
 def choose_least_shared_translations(translations):
@@ -123,4 +232,5 @@ def parse_kjv_def(text):
 
 
 if __name__ == '__main__':
+    # create_strongs_to_phrases()
     create_strongs_to_english()
