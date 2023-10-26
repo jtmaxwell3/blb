@@ -60,6 +60,6 @@ const observer = new MutationObserver((mutations, observer) => {
 });
 // Get all mutations to childList in the subtrees of document.
 observer.observe(document, {
-  // subtree: true,
+  subtree: true,
   childList: true
 });

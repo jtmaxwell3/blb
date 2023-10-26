@@ -4,7 +4,13 @@ import re
 
 import nltk
 from nltk.stem import WordNetLemmatizer
+
 nltk.download('wordnet')
+
+strongs_to_english_override = {
+    "H853": "(dobj)"
+}
+
 
 def create_strongs_to_english():
     """Create a dictionary from strong's numbers to english."""
@@ -12,10 +18,11 @@ def create_strongs_to_english():
     hebrew_translations = get_strongs_dict_translations(filename)
     # hebrew_translation = choose_least_shared_translations(hebrew_translations)
     hebrew_translation = choose_most_frequent_translations(hebrew_translations)
+    hebrew_translation.update(strongs_to_english_override)
     filename = 'strongs-to-english.js'
     file = open('strongs-to-english.js', 'w')
     file.write('var strongs_to_english = ' + str(hebrew_translation) +
-               '\n\nmodule.exports = strongs_to_english;')
+               '\n\nif (typeof window === \'undefined\') {\n    module.exports = strongs_to_english;\n}')
     file.close()
     print('wrote', filename)
 
@@ -37,6 +44,8 @@ def choose_most_frequent_translations(translations):
         phrases = strongs_to_phrases[source]
         for phrase in phrases:
             target = get_target_for_phrase(phrase, targets, lemmatizer)
+            if not target:
+                continue
             if target not in frequency:
                 frequency[target] = 0
             frequency[target] += 1
@@ -46,28 +55,38 @@ def choose_most_frequent_translations(translations):
             if frequency[target] > best_frequency:
                 best_target = target
                 best_frequency = frequency[target]
+        if not best_target:
+            best_target = targets[0]
         translation[source] = best_target
     return translation
 
 
-def get_target_for_phrase(phrase, targets, lemmatizer):
+def get_target_for_phrase(phrase, targets, lemmatizer, debug=False):
     best_target = None
+    best_lemma = None
     for target in targets:
-        target = lemmatize_text(target, lemmatizer)
-        if phrase.find(target) != -1:
+        lemma = lemmatize_text(target, lemmatizer)
+        pos = phrase.find(lemma)
+        if pos != -1:
+            end = pos + len(lemma)
+            if end < len(phrase) and phrase[end].isalnum():
+                continue
             if best_target is None:
                 best_target = target
-            elif target.find(best_target) != -1:
+                best_lemma = lemma
+            elif lemma.find(best_lemma) != -1:
                 # target contains best_target.
                 best_target = target
-            elif best_target.find(target) != -1:
+            elif best_lemma.find(lemma) != -1:
                 # best_target contains target.
                 pass
-            else:
-                print('both', target, 'and', best_target, 'appear in', "'" + phrase + "'")
+            elif debug:
+                print('both', lemma, 'and', best_lemma, 'appear in', "'" + phrase + "'")
     if best_target is None:
-        print('Could not find', targets, 'in', "'" + phrase + "'")
+        if debug:
+            print('Could not find', targets, 'in', "'" + phrase + "'")
     return best_target
+
 
 def create_strongs_to_phrases(lemmatizer=None):
     directory = '../../../interlinear_bible'
@@ -208,7 +227,26 @@ def parse_kjv_def(text):
             end = text.find(')', end + 1)
         if begin < 0 or end < 0 or end < begin:
             break
-        text = text[0:begin] + text[end + 1:]
+        if text[begin + 1] == '-' and text[begin - 1] not in (' ', ','):
+            prior_comma = text.rfind(',', 0, begin)
+            next_comma = text.find(',', begin)
+            if next_comma == -1:
+                next_comma = len(text)
+            next_begin = text.find('(', end)
+            if next_begin == -1:
+                next_begin = len(text)
+            if next_comma < end or next_begin < next_comma:
+                text = text[0:begin] + text[end + 1:]
+            else:
+                prior_text = text[0:prior_comma + 1]
+                alt1 = text[prior_comma + 1:begin]
+                alt2 = combine_morphemes(text[prior_comma + 1:begin], text[begin + 2:end])
+                next_text = text[next_comma:]
+                orig_text = text
+                text = prior_text + alt1 + ', ' + alt2 + next_text
+                print("converted", orig_text, "to\n         ", text)
+        else:
+            text = text[0:begin] + text[end + 1:]
     while True:
         begin = text.find('[')
         end = text.find(']')
@@ -229,6 +267,12 @@ def parse_kjv_def(text):
             continue
         new_items.append(item.strip())
     return new_items
+
+
+def combine_morphemes(stem, suffix):
+    if stem[-1] == 'y' and suffix[0] == 'i':
+        return stem[:-1] + suffix
+    return stem + suffix
 
 
 if __name__ == '__main__':
