@@ -2,6 +2,7 @@ let node_strongs_to_english;
 if (typeof window === 'undefined') {
     // This is so we can run tests using node.js.
     node_strongs_to_english = require('./strongs-to-english.js')
+    get_plural = require('./get_plural.js')
 }
 
 function conjugate(description) {
@@ -69,6 +70,13 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             // Generate conjugation.
             let conjugation = word;
+            if (number == "pl" && word != "God") {
+                results = get_plural(word);
+                // console.log("get_plural", word, results)
+                if (results[1].length == 1) {
+                    conjugation = results[1][0].substring(3);
+                }
+            }
             if (gender != "") {
                 conjugation += " (" + gender + ")"
             }
@@ -94,7 +102,21 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             conjugations.push(conjugation);
         } else if (terms[0] == "Preposition") {
-            if (transliteration[0] == "b") {
+            // Is this an attached preposition?
+            attached = false;
+            for (let j = 0; j < forms.length; j++) {
+                let form2 = forms[j].trim()
+                let parts = ["Adjective", "Adverb", "Noun", "Verb"]
+                for (k = 0; k < parts.length; k++) {
+                    if (form2.startsWith(parts[k])) {
+                        attached = true;
+                    }
+                }
+            }
+            if (!attached) {
+                conjugations.push(word);
+            }
+            else if (transliteration[0] == "b") {
                 conjugations.push("in")
             } else {
                 unknowns.push(terms[0]);

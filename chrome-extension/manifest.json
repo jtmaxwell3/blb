@@ -5,9 +5,13 @@
   "version": "0.1",
   "content_scripts": [{
      "matches": ["https://www.blueletterbible.org/*"],
-     "js": ["blue-letter-bible.js",
-            "strongs-to-english.js",
-            "conjugate.js"]
+     "js": [
+       "blue-letter-bible.js",
+       "conjugate.js",
+       "get_conjugation.js",
+       "get_plural.js",
+       "strongs-to-english.js"
+     ]
     }],
   "action": {
     "default_popup": "hello.html",

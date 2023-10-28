@@ -27,3 +27,7 @@ English: and`, "and (dobj)")
 run_test(`Transliteration: haššāmayim
 From the root שָׁמַיִם (H8064) - Hebrew: Particle definite article; Noun common masculine plural absolute
 English: the heavens`, "the heavens (m)")
+
+run_test(`Transliteration: ʿal
+From the root עַל (H5921) - Hebrew: Preposition
+English: was over`, "on")
