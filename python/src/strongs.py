@@ -8,7 +8,10 @@ from nltk.stem import WordNetLemmatizer
 nltk.download('wordnet')
 
 strongs_to_english_override = {
-    "H853": "(dobj)"
+    "H853": "(dobj)",
+    "H935": "come",
+    "H3605": "all",
+    "H5927": "go up"
 }
 
 
