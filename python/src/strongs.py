@@ -27,7 +27,7 @@ def create_strongs_to_english():
     filename = 'strongs-to-english.js'
     file = open('strongs-to-english.js', 'w')
     # Format hebrew_translation so that each key-value pair is on a separate line.
-    ht_str = ",\n".join(": ".join(("'" + k + "'", "'" + str(v) + "'")) for k, v in hebrew_translation.items())
+    ht_str = ",\n".join(": ".join(('"' + k + '"', '"' + str(v) + '"')) for k, v in hebrew_translation.items())
     file.write('var strongs_to_english = {\n' + ht_str + '\n};\n\n' +
                'if (typeof window === \'undefined\') {\n    module.exports = strongs_to_english;\n}')
     file.close()
