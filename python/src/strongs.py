@@ -10,8 +10,10 @@ nltk.download('wordnet')
 strongs_to_english_override = {
     "H853": "(dobj)",
     "H935": "come",
+    "H3588": "for",
     "H3605": "all",
-    "H5927": "go up"
+    "H5927": "go up",
+    "H6965": "arise"
 }
 
 
@@ -24,8 +26,10 @@ def create_strongs_to_english():
     hebrew_translation.update(strongs_to_english_override)
     filename = 'strongs-to-english.js'
     file = open('strongs-to-english.js', 'w')
-    file.write('var strongs_to_english = ' + str(hebrew_translation) +
-               '\n\nif (typeof window === \'undefined\') {\n    module.exports = strongs_to_english;\n}')
+    # Format hebrew_translation so that each key-value pair is on a separate line.
+    ht_str = ",\n".join(": ".join(("'" + k + "'", "'" + str(v) + "'")) for k, v in hebrew_translation.items())
+    file.write('var strongs_to_english = {\n' + ht_str + '\n};\n\n' +
+               'if (typeof window === \'undefined\') {\n    module.exports = strongs_to_english;\n}')
     file.close()
     print('wrote', filename)
 

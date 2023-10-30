@@ -31,3 +31,15 @@ English: the heavens`, "the heavens (m)")
 run_test(`Transliteration: ʿal
 From the root עַל (H5921) - Hebrew: Preposition
 English: was over`, "on")
+
+run_test(`Transliteration: bᵊṯôḵ
+From the root תָּוֶךְ (H8432) - Hebrew: Preposition; Noun common masculine singular construct
+English: in the midst`, id="in midst (m) of")
+
+run_test(`Transliteration: ûḵḇôḏô
+From the root כָּבוֹד (H3519) - Hebrew: Conjunction; Noun common both singular construct; Suffix pronominal third person masculine singular
+English: And His glory`, "and his/its glory of")
+
+run_test(`Transliteration: 'ôrēḵ
+From the root אוֹר (H216) - Hebrew: Noun common both singular construct; Suffix pronominal second person feminine singular
+English: your light`, "your (fsg) light of")
