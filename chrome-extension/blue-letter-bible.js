@@ -24,10 +24,8 @@ const observer = new MutationObserver((mutations, observer) => {
         const mutation = mutations[i]
         if (mutation.target.id == "interruptDiv") {
             // This is the only mutation we see from document.
-            console.log(mutation.target)
             const header_rows = mutation.target.getElementsByClassName("header-row");
             if (header_rows.length == 1) {
-                console.log('Got header row')
                 const header_row = header_rows[0]
                 // Add conjugation header to header row.
                 const conjugationHeader = document.createElement("div")
@@ -37,7 +35,6 @@ const observer = new MutationObserver((mutations, observer) => {
                 header_row.children[4].remove()
                 header_row.children[3].remove()
                 header_row.children[1].after(conjugationHeader)
-                console.log('Added to header row')
                 // Add conjugation element to each row.
                 const rows = mutation.target.getElementsByClassName("row");
                 for (let i = 0; i < rows.length; i++) {
@@ -52,7 +49,6 @@ const observer = new MutationObserver((mutations, observer) => {
                     row.children[4].remove()
                     row.children[3].remove()
                     row.children[1].after(conjugationDiv)
-                    console.log('Added to row')
                 }
             }
         }

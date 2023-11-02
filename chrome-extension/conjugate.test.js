@@ -107,3 +107,27 @@ English: is upon me`, "on me")
 run_test(`Transliteration: vᵊla'ăsûrîm
 From the root אָסַר (H631) - Hebrew: Conjunction; Preposition; Verb qal participle passive masculine plural absolute
 English: ↓`, "and to bounds (m)")
+
+run_test(`Transliteration: ʿănāvîm
+From the root עָנָו (H6035) - Hebrew: Adjective adjective masculine plural absolute
+English: to the afflicted`, "meek (mp)")
+
+run_test(`Transliteration: ḵā'āreṣ
+From the root אֶרֶץ (H776) - Hebrew: Preposition definite article; Noun common both singular absolute
+English: as the earth`, "as the land")
+
+run_test(`Transliteration: ûḵḡannâ
+From the root גַּנָּה (H1593) - Hebrew: Conjunction; Preposition; Noun common feminine singular absolute
+English: And as a garden`, "and as garden (f)")
+
+run_test(`Transliteration: hēm
+From the root הֵם (H1992) - Hebrew: Pronoun personal third person masculine plural
+English: they`, "they (m)")
+
+run_test(`Transliteration: lāḵēn
+From the root כֵּן (H3651) - Hebrew: Preposition; Adverb
+English: Therefore`, "to as")
+
+run_test(`Transliteration: ûḇiḵḇôḏām
+From the root כָּבוֹד (H3519) - Hebrew: Conjunction; Preposition; Noun common both singular construct; Suffix pronominal third person masculine plural
+English: And in their riches`, "and in their (m) glory of")
