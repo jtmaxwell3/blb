@@ -94,11 +94,11 @@ English: in the midst`, id="in midst (m) of")
 
 run_test(`Transliteration: ûḵḇôḏô
 From the root כָּבוֹד (H3519) - Hebrew: Conjunction; Noun common both singular construct; Suffix pronominal third person masculine singular
-English: And His glory`, "and his/its glory of")
+English: And His glory`, "and his/its glory")
 
 run_test(`Transliteration: 'ôrēḵ
 From the root אוֹר (H216) - Hebrew: Noun common both singular construct; Suffix pronominal second person feminine singular
-English: your light`, "your (fs) light of")
+English: your light`, "your (fs) light")
 
 run_test(`Transliteration: ʿālāy
 From the root עַל (H5921) - Hebrew: Preposition; Suffix pronominal first person common singular
@@ -130,4 +130,23 @@ English: Therefore`, "to as")
 
 run_test(`Transliteration: ûḇiḵḇôḏām
 From the root כָּבוֹד (H3519) - Hebrew: Conjunction; Preposition; Noun common both singular construct; Suffix pronominal third person masculine plural
-English: And in their riches`, "and in their (m) glory of")
+English: And in their riches`, "and in their (m) glory")
+
+run_test(`Transliteration: lō'
+From the root לֹא (H3808) - Hebrew: Particle negative
+English: not`, "not")
+
+run_test(`Transliteration: ḵᵊ'eḥāḏ
+From the root אֶחָד (H259) - Hebrew: Preposition; Adjective cardinal number masculine singular absolute
+English: together`, "as one (ms)")
+
+run_test(`Transliteration: šāmmâ
+From the root שָׁם (H8033) - Hebrew: Adverb; Suffix directional he
+English: there`, "there")
+
+run_test(`Transliteration: kāzō'ṯ
+From the root זֹאת (H2063) - Hebrew: Preposition; Pronoun demonstrative  feminine singular
+English: such a thing`, "???")
+
+run_test(`Transliteration: lāhem - Hebrew: Preposition; Suffix pronominal third person masculine plural
+English: theirs`, "to them (m)")

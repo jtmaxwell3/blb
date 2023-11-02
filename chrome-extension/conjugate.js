@@ -34,8 +34,12 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     let unknowns = [];
     let word = get_English_for_Strongs(strongs)
     let main_part_of_speech = "";
+    let has_suffix = false;
     for (let j = 0; j < forms.length; j++) {
-        let form2 = forms[j].trim()
+        let form2 = forms[j].trim();
+        if (form2.startsWith("Suffix")) {
+            has_suffix = true;
+        }
         let parts = ["Adjective", "Adverb", "Noun", "Verb"]
         for (k = 0; k < parts.length; k++) {
             pos = parts[k]
@@ -64,16 +68,24 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     // Skip.
                 } else if (term == "both") {
                     // Skip.
+                } else if (term == "cardinal") {
+                    // Skip.
                 } else if (term == "common") {
                     // skip.
                 } else if (term == "dual") {
                     number = "p";
                 } else if (term == "construct") {
-                    construct = " of";
+                    if (!has_suffix) {
+                        construct = " of";
+                    }
                 } else if (term == "feminine") {
                     gender = "f";
                 } else if (term == "masculine") {
                     gender = "m";
+                } else if (term == "number") {
+                    // Skip.
+                } else if (term == "ordinal") {
+                    // Skip.
                 } else if (term == "plural") {
                     number = "p";
                 } else if (term == "singular") {
@@ -86,6 +98,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             if (number || gender) {
                 conjugation += " (" + gender + number + ")"
             }
+            conjugation += construct;
             conjugations.push(conjugation);
         } else if (terms[0] == "Adverb") {
             for (let j = 1; j < terms.length; j++) {
@@ -111,13 +124,17 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "both") {
                     // Skip.
                 } else if (term == "common") {
-                    // skip.
+                    // Skip.
                 } else if (term == "dual") {
                     number = "p";
                 } else if (term == "construct") {
-                    construct = " of";
+                    if (! has_suffix) {
+                        construct = " of";
+                    }
                 } else if (term == "feminine") {
                     gender = "f";
+                } else if (term == "gentilic") {
+                    // Skip.
                 } else if (term == "masculine") {
                     gender = "m";
                 } else if (term == "name") {
@@ -144,27 +161,28 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             conjugations.push(conjugation);
         } else if (terms[0] == "Particle") {
             let conjugation = "";
+            if (!main_part_of_speech) {
+                // Most particles are standalone.
+                conjugation = word;
+            }
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
-                if (term == "article") {
-                    // Skip.
-                } else if (term == "definite") {
+                if (term == "definite") {
+                    // Definite articles are attached.
                     conjugation = "the";
-                } else if (term == "demonstrative") {
-                    conjugation = word;
-                } else if (term == "direct") {
-                    conjugation = word;
-                } else if (term == "marker") {
-                    // Skip.
-                } else if (term == "object") {
-                    // Skip.
-                } else {
-                    unknowns.push(term)
+                } else if (term == "interrogative") {
+                    // Definite articles are attached.
+                    conjugation = "¿";
                 }
+            }
+            if (!conjugation) {
+                // An unknown attached particle.
+                conjugation = "???";
+                unknowns.push(terms)
             }
             conjugations.push(conjugation);
         } else if (terms[0] == "Preposition") {
-            if (main_part_of_speech == "") {
+            if (!main_part_of_speech && word) {
                 conjugation = word;
             } else {
                 // This is an attached preposition.
@@ -202,6 +220,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 if (term == "article") {
                     // Skip.
                 } else if (term == "definite") {
+                    // Prepositions can include definite articles.
                     conjugation += " the";
                 } else {
                     unknowns.push(term)
@@ -216,6 +235,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
                 if (term == "common") {
+                    // Skip.
+                } else if (term == "demonstrative") {
                     // Skip.
                 } else if (term == "feminine") {
                     gender = "f";
@@ -277,27 +298,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             // Generate conjugation.
             let conjugation = "";
             if (main_part_of_speech == "Noun") {
-                if (person == "1") {
-                    if (number == "s") {
-                        conjugation = "my";
-                    } else {
-                        conjugation = "our";
-                    }
-                } else if (person == "2") {
-                    conjugation = "your (" + gender + number + ")";
-                } else if (person == "3") {
-                    if (number == "s") {
-                        if (gender == "f") {
-                            conjugation = "hers/its";
-                        } else if (gender == "m") {
-                            conjugation = "his/its";
-                        } else {
-                            conjugation = "his/hers/its";
-                        }
-                    } else {
-                        conjugation = "their (" + gender + ")";
-                    }
-                }
+                conjugation = get_possessive_pronoun(person, gender, number);
                 // Put the conjugation before the prior form.
                 conjugations.splice(conjugations.length - 1, 0, conjugation)
             } else {
@@ -352,6 +353,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     imperfect = true;
                 } else if (term == "infinitive") {
                     infinitive = true;
+                } else if (term == "jussive") {
+                    imperative = true;
                 } else if (term == "masculine") {
                     gender = "m";
                 } else if (term == "niphal") {
@@ -510,6 +513,32 @@ function get_object_pronoun(person, gender, number) {
             return "them (" + gender + ")";
         }
     }
+    return "???";
+}
+
+function get_possessive_pronoun(person, gender, number) {
+    if (person == "1") {
+        if (number == "s") {
+            return "my";
+        } else {
+            return "our";
+        }
+    } else if (person == "2") {
+        return "your (" + gender + number + ")";
+    } else if (person == "3") {
+        if (number == "s") {
+            if (gender == "f") {
+                return "hers/its";
+            } else if (gender == "m") {
+                return "his/its";
+            } else {
+                return "his/hers/its";
+            }
+        } else {
+            return "their (" + gender + ")";
+        }
+    }
+    return "???";
 }
 
 function get_reflexive_pronoun(person, gender, number) {
@@ -536,7 +565,7 @@ function get_reflexive_pronoun(person, gender, number) {
             }
         }
     }
-    return ""
+    return "???"
 }
 
 function get_subject_pronoun(person, gender, number, implicit) {
@@ -564,7 +593,7 @@ function get_subject_pronoun(person, gender, number, implicit) {
             return "he/she/it";
         }
     }
-    return ""
+    return "???"
 }
 
 function get_English_for_Strongs(strongs) {
