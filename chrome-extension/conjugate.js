@@ -3,6 +3,7 @@ if (typeof window === 'undefined') {
     // This is so we can run tests using node.js.
     node_strongs_to_english = require('./strongs-to-english.js')
     get_plural = require('./get_plural.js')
+    get_conjugation = require('./get_conjugation.js')
 }
 
 function conjugate(description) {
@@ -66,7 +67,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "common") {
                     // skip.
                 } else if (term == "dual") {
-                    number = "pl";
+                    number = "p";
                 } else if (term == "construct") {
                     construct = " of";
                 } else if (term == "feminine") {
@@ -76,23 +77,19 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "name") {
                     // Skip.
                 } else if (term == "plural") {
-                    number = "pl";
+                    number = "p";
                 } else if (term == "proper") {
                     // Skip.
                 } else if (term == "singular") {
-                    number = "sg";
+                    number = "s";
                 } else {
                     unknowns.push(term)
                 }
             }
             // Generate conjugation.
             let conjugation = word;
-            if (number == "pl" && word != "God") {
-                results = get_plural(word);
-                // console.log("get_plural", word, results)
-                if (results[1].length == 1) {
-                    conjugation = results[1][0].substring(3);
-                }
+            if (number == "p" && word != "God") {
+                conjugation = get_noun_inflection(word, "PL");
             }
             if (gender != "") {
                 conjugation += " (" + gender + ")"
@@ -121,37 +118,46 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             conjugations.push(conjugation);
         } else if (terms[0] == "Preposition") {
-            // Is this an attached preposition?
             if (main_part_of_speech == "") {
                 conjugations.push(word);
-            } else if (transliteration[0] == "b") {
-                conjugations.push("in");
-            } else if (transliteration[0] == "l") {
-                conjugations.push("to");
-            } else if (transliteration[0] == "m") {
-                conjugations.push("from");
             } else {
-                unknowns.push(terms[0]);
+                // This is an attached preposition.
+                preposition = transliteration.substring(0, 2);
+                if (preposition == "vᵊ") {
+                    // Skip the vav.
+                    preposition = transliteration.substring(2, 4);
+                }
+                if (preposition[0] == "b") {
+                    conjugations.push("in");
+                } else if (preposition[0] == "l") {
+                    conjugations.push("to");
+                } else if (preposition[0] == "m") {
+                    conjugations.push("from");
+                } else {
+                    unknowns.push(preposition);
+                }
             }
             for (let j = 1; j < terms.length; j++) {
                 unknowns.push(terms[j]);
             }
         } else if (terms[0] == "Suffix") {
-                        let gender = "";
+            let gender = "";
             let number = "";
             let person = "";
             let voice = "";
             // Process terms.
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
-                if (term == "feminine") {
+                if (term == "common") {
+                    // Skip.
+                } else if (term == "feminine") {
                     gender = "f";
                 } else if (term == "first") {
-                    number = "1";
+                    person = "1";
                 } else if (term == "masculine") {
                     gender = "m";
                 } else if (term == "plural") {
-                    number = "pl";
+                    number = "p";
                 } else if (term == "pronominal") {
                     // Skip.
                 } else if (term == "person") {
@@ -159,7 +165,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "second") {
                     person = "2";
                 } else if (term == "singular") {
-                    number = "sg";
+                    number = "s";
                 } else if (term == "third") {
                     person = "3";
                 } else {
@@ -170,7 +176,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let conjugation = "";
             if (main_part_of_speech == "Noun") {
                 if (person == "1") {
-                    if (number == "sg") {
+                    if (number == "s") {
                         conjugation = "my";
                     } else {
                         conjugation = "our";
@@ -178,7 +184,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (person == "2") {
                     conjugation = "your (" + gender + number + ")";
                 } else if (person == "3") {
-                    if (number == "sg") {
+                    if (number == "s") {
                         if (gender == "f") {
                             conjugation = "hers/its";
                         } else if (gender == "m") {
@@ -193,27 +199,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 // Put the conjugation before the prior form.
                 conjugations.splice(conjugations.length - 1, 0, conjugation)
             } else {
-                if (person == "1") {
-                    if (number == "sg") {
-                        conjugation = "me";
-                    } else {
-                        conjugation = "us";
-                    }
-                } else if (person == "2") {
-                    conjugation = "you (" + gender + number + ")";
-                } else if (person == "3") {
-                    if (number == "sg") {
-                        if (gender == "f") {
-                            conjugation = "her/it";
-                        } else if (gender == "m") {
-                            conjugation = "him/it";
-                        } else {
-                            conjugation = "him/her/it";
-                        }
-                    } else {
-                        conjugation = "them (" + gender + ")";
-                    }
-                }
+                conjugation = get_object_pronoun(person, gender, number);
                 conjugations.push(conjugation)
             }
         } else if (terms[0] == "Verb") {
@@ -221,21 +207,56 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let number = "";
             let person = "";
             let voice = "";
-            let imperfect = false;
+            let causative = false;
+            let construct = false;
             let imperative = false;
+            let imperfect = false;
+            let infinitive = false;
+            let intensive = false;
+            let participle = false;
+            let passive = false;
+            let reflexive = false;
             // Process terms.
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
-                if (term == "feminine") {
+                if (term == "active") {
+                    // Skip.
+                } else if (term == "absolute") {
+                    // Skip.
+                } else if (term == "construct") {
+                    construct = true;
+                } else if (term == "feminine") {
                     gender = "f";
                 } else if (term == "first") {
                     person = "1";
+                } else if (term == "hiphil") {
+                    causative = true;
+                } else if (term == "hophal") {
+                    causative = true;
+                    passive = true;
+                } else if (term == "hithpael") {
+                    reflexive = true;
                 } else if (term == "imperative") {
                     imperative = true;
+                } else if (term == "imperfect") {
+                    imperfect = true;
+                } else if (term == "infinitive") {
+                    infinitive = true;
                 } else if (term == "masculine") {
                     gender = "m";
+                } else if (term == "niphal") {
+                    passive = true;
+                } else if (term == "participle") {
+                    participle = true;
+                } else if (term == "passive") {
+                    passive = true;
+                } else if (term == "piel") {
+                    intensive = true;
                 } else if (term == "plural") {
-                    number = "pl";
+                    number = "p";
+                } else if (term == "pual") {
+                    intensive = true;
+                    passive = true;
                 } else if (term == "qal") {
                     // Skip.
                 } else if (term == "perfect") {
@@ -244,8 +265,10 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     // Skip.
                 } else if (term == "second") {
                     person = "2";
+                } else if (term == "sequential") {
+                    imperfect = true;
                 } else if (term == "singular") {
-                    number = "sg";
+                    number = "s";
                 } else if (term == "third") {
                     person = "3";
                 } else {
@@ -253,24 +276,42 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 }
             }
             // Generate conjugation.
-            let conjugation = "";
-            if (gender != "" || number != "" || person != "") {
-                if (person == "1") {
-                    if (number == "sg") {
-                        conjugation = "I";
-                    } else {
-                        conjugation = "we";
-                    }
-                } else if (person == "2") {
-                    conjugation = "you (" + gender + number + ")";
-                } else if (person == "3") {
-                    conjugation = "(" + person + gender + number + ")";
-                }
-                conjugation += " ";
+            let verb = word;
+            if (intensive) {
+                verb = "really " + verb;
             }
-            conjugation += word;
+            if (causative) {
+                verb = "cause to " + verb;
+            }
+            if (passive) {
+                if (participle || infinitive) {
+                    verb = get_verb_inflection(verb, "PP")
+                } else {
+                    verb = "be " + get_verb_inflection(verb, "PP")
+                }
+            }
+            if (imperfect) {
+                verb = get_verb_inflection(verb, "PC");
+            }
+            if (reflexive) {
+                verb += " " + get_reflexive_pronoun(person, gender, number);
+            }
+            let conjugation = verb;
+            if (participle) {
+                if (number == "p") {
+                    conjugation = get_noun_inflection(conjugation, "PL")
+                }
+                if (gender) {
+                    conjugation += " (" + gender + ")";
+                }
+            } else if (!infinitive) {
+                conjugation = get_subject_pronoun(person, gender, number) + " " + verb;
+            }
             if (imperative) {
                 conjugation += "!"
+            }
+            if (construct) {
+                conjugation += " of"
             }
             conjugations.push(conjugation);
         } else {
@@ -294,6 +335,103 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
         result += " ???";
     }
     return result;
+}
+
+function get_noun_inflection(word, form) {
+    results = get_plural(word);
+    for (let i = 0; i < results[1].length; i++) {
+        result = results[1][i];
+        if (result.substring(0, 3) == form + ":") {
+            return result.substring(3)
+        }
+    }
+    return word;
+}
+
+function get_verb_inflection(word, form) {
+    space = word.indexOf(" ")
+    if (space != -1) {
+        first_word = word.substring(0, space);
+        remainder = word.substring(space + 1);
+        if (first_word == "really") {
+            return "really " + get_verb_inflection(remainder, form);
+        }
+        return get_verb_inflection(first_word, form) + " " + remainder;
+    }
+    results = get_conjugation(word);
+    for (let i = 0; i < results[1].length; i++) {
+        result = results[1][i];
+        if (result.substring(0, 3) == form + ":") {
+            return result.substring(3)
+        }
+    }
+    return word;
+}
+
+function get_object_pronoun(person, gender, number) {
+    if (person == "1") {
+        if (number == "s") {
+            return "me";
+        } else {
+            return "us";
+        }
+    } else if (person == "2") {
+        return "you (" + gender + number + ")";
+    } else if (person == "3") {
+        if (number == "s") {
+            if (gender == "f") {
+                return "her/it";
+            } else if (gender == "m") {
+                return "him/it";
+            } else {
+                return "him/her/it";
+            }
+        } else {
+            return "them (" + gender + ")";
+        }
+    }
+}
+
+function get_reflexive_pronoun(person, gender, number) {
+    if (person == "1") {
+        if (number == "s") {
+            return "myself";
+        } else {
+            return "ourselves";
+        }
+    } else if (person == "2") {
+        if (number == "s") {
+           return "yourself (" + gender + ")";
+        } else {
+            return "yourselves (" + gender + ")";
+        }
+    } else if (person == "3") {
+        if (number == "s") {
+            if (gender == "m") {
+                return "himself/itself";
+            } else if (gender == "f") {
+                return "herself/itself";
+            } else {
+                return "himself/herself/itself";
+            }
+        }
+    }
+    return ""
+}
+
+function get_subject_pronoun(person, gender, number) {
+    if (person == "1") {
+        if (number == "s") {
+            return "I";
+        } else {
+            return "we";
+        }
+    } else if (person == "2") {
+        return "you (" + gender + number + ")";
+    } else if (person == "3") {
+        return "(" + person + gender + number + ")";
+    }
+    return ""
 }
 
 function get_English_for_Strongs(strongs) {

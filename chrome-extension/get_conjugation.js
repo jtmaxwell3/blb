@@ -747,7 +747,7 @@ consonants = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'q', 'p', '
 poly_conjus = ['found', 'fell', 'lay', 'bind', 'saw', 'ground', 'wound', 'rent', 'resent']
 
 if (typeof window === 'undefined') {
-    module.exports = get_plural;
+    module.exports = get_conjugation;
     if (typeof process.argv !== 'undefined' && process.argv.length == 3) {
         word = process.argv[2]
         results = get_conjugation(word)
