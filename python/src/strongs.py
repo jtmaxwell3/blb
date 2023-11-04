@@ -197,12 +197,13 @@ def get_strongs_dict_translations(filename):
     count = 0
     for source in dictionary:
         entry = dictionary[source]
+        targets = get_entry_translations(entry)
         if 'kjv_def' in entry:
             kjv_def = entry['kjv_def']
-            if kjv_def.find('(') > 0:
+            if False and kjv_def.find('(') > 0:
                 print(source, 'kjv_def:', kjv_def)
+                print(source, 'kjv_def:', targets)
                 count += 1
-        targets = get_entry_translations(entry)
         translations[source] = targets
     print(count, 'parentheticals')
     return translations
@@ -220,7 +221,7 @@ def get_entry_translations(entry):
     return translations
 
 
-def parse_kjv_def2(text):
+def parse_kjv_def(text):
     # Remove square brackets.
     while True:
         begin = text.find('[')
@@ -228,7 +229,7 @@ def parse_kjv_def2(text):
         if begin < 0 or end < 0 or end < begin:
             break
         text = text[0:begin] + text[end + 1:]
-    period = text.find('. ')
+    period = find_period(text)
     if period == -1 and text[-1] == '.':
         period = len(text) - 1
     if period > 0:
@@ -238,6 +239,19 @@ def parse_kjv_def2(text):
     while "" in definitions:
         definitions.remove("")
     return definitions
+
+
+def find_period(text):
+    """Find a top-level period (not within parentheses)."""
+    parentheses = 0
+    for i in range(0, len(text)):
+        if text[i] == '(':
+            parentheses += 1
+        elif text[i] == ')':
+            parentheses += -1
+        elif text[i] == '.' and parentheses == 0:
+            return i
+    return -1
 
 
 def split_by_commas(text):
@@ -271,7 +285,7 @@ def expand_parentheses(text):
     if open_paren == -1:
         return [text.strip()]
     # Get the next close parenthesis ignoring embedded parentheses.
-    close_paren = open_paren + 1
+    close_paren = len(text)
     parentheses = 0
     for i in range(open_paren, len(text)):
         if text[i] == '(':
@@ -291,6 +305,9 @@ def expand_parentheses(text):
         remainders = expand_parentheses(text[close_paren + 1:])
     new_items = list()
     for item in items:
+        if item.find('.') > -1:
+            # Not part of a definition.
+            continue
         prefix = combine_phrases(text[0:open_paren], item)
         for remainder in remainders:
             new_item = combine_phrases(prefix, remainder)
@@ -313,15 +330,31 @@ def combine_phrases(phrase1, phrase2):
     if phrase2[0] == '-':
         morphemes = True
         phrase2 = phrase2[1:]
+    if not phrase1:
+        return phrase2
+    if not phrase2:
+        return phrase1
     if not morphemes:
         return phrase1 + " " + phrase2
     # Combine morphemes.
-    if phrase1[-1] == 'y' and phrase2[0] == 'i':
-        return phrase1[:-1] + phrase2
-    return phrase1 + phrase2
+    result = phrase1 + phrase2
+    if phrase1 == 'nine' and phrase2 == 'th':
+        result = 'ninth'
+    elif phrase1 == 'stone' and phrase2 == 'ny':
+        result = 'stony'
+    elif phrase1 == 'true' and phrase2 == 'th':
+        result = 'truth'
+    elif phrase1[-1] == 'e' and len(phrase1) > 1 and phrase1[-2] != 'e' and phrase2 == 'y':
+        result = phrase1[0:-1] + phrase2
+    elif phrase1[-1] == 'e' and len(phrase1) > 1 and phrase1[-2] != 'e'  and phrase2[0] == 'i':
+        result = phrase1[:-1] + phrase2
+    elif phrase1[-1] == 'y' and phrase2[0] == 'i':
+        result = phrase1[:-1] + phrase2
+    print(phrase1, "+", phrase2, "=", result)
+    return result
 
 
-def parse_kjv_def(text):
+def old_parse_kjv_def(text):
     """Parse the kjv_def field of an open scripture entry."""
     orig_text = text
     # Remove parenthetical.

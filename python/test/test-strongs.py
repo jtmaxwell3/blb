@@ -1,7 +1,7 @@
 import unittest
 from nltk.stem import WordNetLemmatizer
 
-from strongs import lemmatize_text, combine_phrases, parse_kjv_def2
+from strongs import lemmatize_text, combine_phrases, parse_kjv_def
 
 
 class Test(unittest.TestCase):
@@ -43,16 +43,25 @@ class Test(unittest.TestCase):
         run_test('a', '-b', 'ab')
         run_test('a-', '-b', 'ab')
         run_test('try', '-ies', 'tries')
+        run_test('flee', '-ing', 'fleeing')
 
     def test_parse_kjv_entry(self):
 
         def run_test(test, gold):
-            result = parse_kjv_def2(test)
+            result = parse_kjv_def(test)
             self.assertEqual(gold, result)
 
+        run_test("fenced (city, fort, munition, strong hold.",
+                 ["fenced", "fenced city", "fenced fort", "fenced munition", "fenced strong hold"])
         gold = ["father", "fatherless", "forefather", "forefatherless"]
         run_test("(fore-) father(-less)", gold)
         run_test("fire, light. See also H224 (אוּרִים).", ["fire", "light"])
         run_test("mourn(-er, -ing).", ["mourn", "mourner", "mourning"])
         run_test("mighty (one)", ["mighty", "mighty one"])
         run_test("(dwelling) (place)", ["place", "dwelling", "dwelling place"])
+        run_test("great(-ly, -ness, number)",
+                 ["great", "greatly", "greatness", "great number"])
+        run_test("nine ([phrase] -teen, [phrase] -teenth, -th).",
+                 ["nine", "nineteen", "nineteenth", "ninth"])
+        run_test(" Haakashtari (includ. the article).", ["Haakashtari"])
+        # run_test("dwelling((-) place)", ["dwell", "dwelling place", "dwelling-place"])
