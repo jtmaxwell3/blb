@@ -150,3 +150,7 @@ English: such a thing`, "???")
 
 run_test(`Transliteration: lāhem - Hebrew: Preposition; Suffix pronominal third person masculine plural
 English: theirs`, "to them (m)")
+
+run_test(`Transliteration: 'ōhēḇ
+From the root אָהַב (H157) - Hebrew: Verb qal participle active masculine singular absolute
+English: love`, "loving (m)")

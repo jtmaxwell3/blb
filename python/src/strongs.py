@@ -7,23 +7,12 @@ from nltk.stem import WordNetLemmatizer
 
 nltk.download('wordnet')
 
-strongs_to_english_override = {
-    "H853": "(dobj)",
-    "H935": "come",
-    "H3588": "for",
-    "H3605": "all",
-    "H5927": "go up",
-    "H6965": "arise"
-}
-
-
 def create_strongs_to_english():
     """Create a dictionary from strong's numbers to english."""
     filename = '../../../strongs/hebrew/strongs-hebrew-dictionary.json'
     hebrew_translations = get_strongs_dict_translations(filename)
     # hebrew_translation = choose_least_shared_translations(hebrew_translations)
     hebrew_translation = choose_most_frequent_translations(hebrew_translations)
-    hebrew_translation.update(strongs_to_english_override)
     filename = 'strongs-to-english.js'
     file = open('strongs-to-english.js', 'w')
     # Format hebrew_translation so that each key-value pair is on a separate line.
@@ -51,6 +40,8 @@ def choose_most_frequent_translations(translations):
         phrases = strongs_to_phrases[source]
         for phrase in phrases:
             target = get_target_for_phrase(phrase, targets, lemmatizer)
+            if source == 'H6205':
+                print(target, 'is target for', phrase)
             if not target:
                 continue
             if target not in frequency:
@@ -203,10 +194,17 @@ def get_strongs_dict_translations(filename):
     with open(filename, 'r') as file:
         dictionary = json.load(file)
     translations = dict()
+    count = 0
     for source in dictionary:
         entry = dictionary[source]
+        if 'kjv_def' in entry:
+            kjv_def = entry['kjv_def']
+            if kjv_def.find('(') > 0:
+                print(source, 'kjv_def:', kjv_def)
+                count += 1
         targets = get_entry_translations(entry)
         translations[source] = targets
+    print(count, 'parentheticals')
     return translations
 
 
@@ -220,6 +218,107 @@ def get_entry_translations(entry):
     if len(translations) == 0:
         print('ERROR no entries for', entry)
     return translations
+
+
+def parse_kjv_def2(text):
+    # Remove square brackets.
+    while True:
+        begin = text.find('[')
+        end = text.find(']')
+        if begin < 0 or end < 0 or end < begin:
+            break
+        text = text[0:begin] + text[end + 1:]
+    period = text.find('. ')
+    if period == -1 and text[-1] == '.':
+        period = len(text) - 1
+    if period > 0:
+        text = text[0:period]
+    definitions = split_by_commas(text)
+    # Deal with entries like "(dwelling) (place)".
+    while "" in definitions:
+        definitions.remove("")
+    return definitions
+
+
+def split_by_commas(text):
+    """Split text by commas, expanding parentheses as alternatives."""
+    items = list()
+    while True:
+        comma_pos = find_comma(text)
+        if comma_pos == -1:
+            items += expand_parentheses(text)
+            break
+        items += expand_parentheses(text[0:comma_pos])
+        text = text[comma_pos + 1:]
+    return items
+
+
+def find_comma(text):
+    """Find a top-level comma (not within parentheses)."""
+    parentheses = 0
+    for i in range(0, len(text)):
+        if text[i] == '(':
+            parentheses += 1
+        elif text[i] == ')':
+            parentheses += -1
+        elif text[i] == ',' and parentheses == 0:
+            return i
+    return -1
+
+def expand_parentheses(text):
+    """Expand parentheses as alternatives."""
+    open_paren = text.find('(')
+    if open_paren == -1:
+        return [text.strip()]
+    # Get the next close parenthesis ignoring embedded parentheses.
+    close_paren = open_paren + 1
+    parentheses = 0
+    for i in range(open_paren, len(text)):
+        if text[i] == '(':
+            parentheses += 1
+        elif text[i] == ')':
+            parentheses += -1
+            if parentheses == 0:
+                close_paren = i
+                break
+    # Break segment by commas.
+    segment = text[open_paren + 1: close_paren]
+    items = [""]  # parentheses are optional.
+    items += split_by_commas(segment)
+    if close_paren + 1 == len(text):
+        remainders = [""]
+    else:
+        remainders = expand_parentheses(text[close_paren + 1:])
+    new_items = list()
+    for item in items:
+        prefix = combine_phrases(text[0:open_paren], item)
+        for remainder in remainders:
+            new_item = combine_phrases(prefix, remainder)
+            new_items.append(new_item)
+    return new_items
+
+
+def combine_phrases(phrase1, phrase2):
+    # Combine phrases as words unless there is a hyphen.
+    phrase1 = phrase1.strip()
+    phrase2 = phrase2.strip()
+    if not phrase1:
+        return phrase2
+    if not phrase2:
+        return phrase1
+    morphemes = False
+    if phrase1[-1] == '-':
+        morphemes = True
+        phrase1 = phrase1[:-1]
+    if phrase2[0] == '-':
+        morphemes = True
+        phrase2 = phrase2[1:]
+    if not morphemes:
+        return phrase1 + " " + phrase2
+    # Combine morphemes.
+    if phrase1[-1] == 'y' and phrase2[0] == 'i':
+        return phrase1[:-1] + phrase2
+    return phrase1 + phrase2
 
 
 def parse_kjv_def(text):
@@ -251,7 +350,7 @@ def parse_kjv_def(text):
                 next_text = text[next_comma:]
                 orig_text = text
                 text = prior_text + alt1 + ', ' + alt2 + next_text
-                print("converted", orig_text, "to\n         ", text)
+                # print("converted", orig_text, "to\n         ", text)
         else:
             text = text[0:begin] + text[end + 1:]
     while True:

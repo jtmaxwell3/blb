@@ -2,6 +2,7 @@ let node_strongs_to_english;
 if (typeof window === 'undefined') {
     // This is so we can run tests using node.js.
     node_strongs_to_english = require('./strongs-to-english.js')
+    strongs_to_english_override = require('./strongs-to-english-override.js')
     get_plural = require('./get_plural.js')
     get_conjugation = require('./get_conjugation.js')
 }
@@ -406,6 +407,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             if (causative) {
                 verb = "cause to " + verb;
             }
+            // Get participial form.
             if (passive) {
                 if (participle || infinitive) {
                     verb = get_verb_inflection(verb, "PP")
@@ -413,7 +415,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     verb = "be " + get_verb_inflection(verb, "PP")
                 }
             }
-            if (imperfect) {
+            if (imperfect || (participle && !passive)) {
                 verb = get_verb_inflection(verb, "PC");
             }
             if (reflexive) {
@@ -528,11 +530,11 @@ function get_possessive_pronoun(person, gender, number) {
     } else if (person == "3") {
         if (number == "s") {
             if (gender == "f") {
-                return "hers/its";
+                return "her/its";
             } else if (gender == "m") {
                 return "his/its";
             } else {
-                return "his/hers/its";
+                return "his/her/its";
             }
         } else {
             return "their (" + gender + ")";
@@ -599,6 +601,9 @@ function get_subject_pronoun(person, gender, number, implicit) {
 function get_English_for_Strongs(strongs) {
     if (!strongs) {
         return ""
+    }
+    if (strongs in strongs_to_english_override) {
+        return strongs_to_english_override[strongs];
     }
     if (node_strongs_to_english) {
         // This is so we can run tests using node.js.
