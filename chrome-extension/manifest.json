@@ -10,7 +10,8 @@
        "conjugate.js",
        "get_conjugation.js",
        "get_plural.js",
-       "strongs-to-english.js"
+       "strongs-to-english.js",
+       "strongs-to-english-override.js"
      ]
     }],
   "action": {

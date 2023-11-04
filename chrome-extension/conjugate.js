@@ -320,6 +320,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let participle = false;
             let passive = false;
             let reflexive = false;
+            let sequential = false;
             // Process terms.
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
@@ -390,7 +391,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "second") {
                     person = "2";
                 } else if (term == "sequential") {
-                    imperfect = true;
+                    sequential = true;
                 } else if (term == "singular") {
                     number = "s";
                 } else if (term == "third") {
