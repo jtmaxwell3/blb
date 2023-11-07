@@ -27,8 +27,11 @@ def choose_most_frequent_translations(translations):
     translation = dict()
     lemmatizer = WordNetLemmatizer()
     strongs_to_phrases = create_strongs_to_phrases(lemmatizer)
+    debug_source = 'H8432'
     for source in translations:
         targets = translations[source]
+        if source == debug_source:
+            print(source, 'targets:', targets)
         if len(targets) == 1:
             translation[source] = targets[0]
             continue
@@ -40,7 +43,7 @@ def choose_most_frequent_translations(translations):
         phrases = strongs_to_phrases[source]
         for phrase in phrases:
             target = get_target_for_phrase(phrase, targets, lemmatizer)
-            if source == 'H6205':
+            if source == debug_source:
                 print(target, 'is target for', phrase)
             if not target:
                 continue
@@ -55,6 +58,10 @@ def choose_most_frequent_translations(translations):
                 best_frequency = frequency[target]
         if not best_target:
             best_target = targets[0]
+        lemmatized_target = lemmatize_text(best_target, lemmatizer)
+        if lemmatized_target != best_target and lemmatized_target in targets:
+            print("lemmatized", best_target, "to", lemmatized_target)
+            best_target = lemmatized_target
         translation[source] = best_target
     return translation
 

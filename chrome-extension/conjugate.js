@@ -112,7 +112,11 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 let term = terms[j];
                 unknowns.push(term)
             }
-            conjugations.push("and");
+            if (forms.length == 1) {
+                conjugations.push(word)
+            } else {
+                conjugations.push("and");
+            }
         } else if (terms[0] == "Noun") {
             let gender = "";
             let number = "";
@@ -317,6 +321,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let imperfect = false;
             let infinitive = false;
             let intensive = false;
+            let jussive = false;
             let participle = false;
             let passive = false;
             let reflexive = false;
@@ -356,7 +361,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "infinitive") {
                     infinitive = true;
                 } else if (term == "jussive") {
-                    imperative = true;
+                    jussive = true;
                 } else if (term == "masculine") {
                     gender = "m";
                 } else if (term == "niphal") {
@@ -400,6 +405,10 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     unknowns.push(term)
                 }
             }
+            if (sequential) {
+                // Vav-consecutive changes the aspect.
+                imperfect = !imperfect;
+            }
             // Generate conjugation.
             let verb = word;
             if (intensive) {
@@ -421,6 +430,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             if (reflexive) {
                 verb += " " + get_reflexive_pronoun(person, gender, number);
+            }
+            if (jussive) {
+                verb = "let " + verb;
             }
             let conjugation = verb;
             if (participle) {
@@ -464,6 +476,12 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
 }
 
 function get_noun_inflection(word, form) {
+    if (word == "heaven" && form == "PL") {
+        return "heavens";
+    }
+    if (word == "water" && form == "PL") {
+        return "waters";
+    }
     results = get_plural(word);
     for (let i = 0; i < results[1].length; i++) {
         result = results[1][i];

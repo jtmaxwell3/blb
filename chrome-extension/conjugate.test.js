@@ -9,6 +9,10 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: haššāmayim
+From the root שָׁמַיִם (H8064) - Hebrew: Particle definite article; Noun common masculine plural absolute
+English: the heavens`, "the heavens (m)")
+
 run_test(`Transliteration: bᵊrē'šîṯ
 From the root רֵאשִׁית (H7225) - Hebrew: Preposition; Noun common feminine singular absolute
 English: In the beginning`, "in beginning (f)")
@@ -75,10 +79,6 @@ From the root אֵת (H853) - Hebrew: Particle direct object marker`, "(dobj)")
 run_test(`Transliteration: vᵊ'ēṯ
 From the root אֵת (H853) - Hebrew: Conjunction; Particle direct object marker
 English: and`, "and (dobj)")
-
-run_test(`Transliteration: haššāmayim
-From the root שָׁמַיִם (H8064) - Hebrew: Particle definite article; Noun common masculine plural absolute
-English: the heavens`, "the heavens (m)")
 
 run_test(`Transliteration: mᵊ'ōrōṯ
 From the root מָאוֹר (H3974) - Hebrew: Noun common masculine plural absolute
@@ -154,3 +154,7 @@ English: theirs`, "to them (m)")
 run_test(`Transliteration: 'ōhēḇ
 From the root אָהַב (H157) - Hebrew: Verb qal participle active masculine singular absolute
 English: love`, "loving (m)")
+
+run_test(`Transliteration: kî
+From the root כִּי (H3588) - Hebrew: Conjunction
+English: that`, "that")
