@@ -27,7 +27,7 @@ def choose_most_frequent_translations(translations):
     translation = dict()
     lemmatizer = WordNetLemmatizer()
     strongs_to_phrases = create_strongs_to_phrases(lemmatizer)
-    debug_source = 'H8432'
+    debug_source = None
     for source in translations:
         targets = translations[source]
         if source == debug_source:
@@ -42,7 +42,7 @@ def choose_most_frequent_translations(translations):
             continue
         phrases = strongs_to_phrases[source]
         for phrase in phrases:
-            target = get_target_for_phrase(phrase, targets, lemmatizer)
+            target = get_target_for_phrase(phrase, targets, lemmatizer, source == debug_source)
             if source == debug_source:
                 print(target, 'is target for', phrase)
             if not target:
@@ -50,6 +50,8 @@ def choose_most_frequent_translations(translations):
             if target not in frequency:
                 frequency[target] = 0
             frequency[target] += 1
+        if source == debug_source:
+            print('frequency', frequency)
         best_target = None
         best_frequency = 0
         for target in frequency:
@@ -73,20 +75,29 @@ def get_target_for_phrase(phrase, targets, lemmatizer, debug=False):
         lemma = lemmatize_text(target, lemmatizer)
         pos = phrase.find(lemma)
         if pos != -1:
+            if pos > 0 and phrase[pos - 1].isalnum():
+                # Matched within a word.
+                continue
             end = pos + len(lemma)
             if end < len(phrase) and phrase[end].isalnum():
+                # Matched within a word.
                 continue
             if best_target is None:
-                best_target = target
                 best_lemma = lemma
+                best_target = target
             elif lemma.find(best_lemma) != -1:
                 # target contains best_target.
+                best_lemma = lemma
                 best_target = target
             elif best_lemma.find(lemma) != -1:
                 # best_target contains target.
                 pass
-            elif debug:
-                print('both', lemma, 'and', best_lemma, 'appear in', "'" + phrase + "'")
+            else:
+                if debug:
+                    print('both', lemma, 'and', best_lemma, 'appear in', "'" + phrase + "'")
+                if len(best_lemma) < len(lemma):
+                    best_lemma = lemma
+                    best_target = target
     if best_target is None:
         if debug:
             print('Could not find', targets, 'in', "'" + phrase + "'")
