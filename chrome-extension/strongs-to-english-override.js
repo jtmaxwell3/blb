@@ -5,6 +5,7 @@ var strongs_to_english_override = {
     "H3605": "all",
     "H3808": "not",
     "H5927": "go up",
+    "H6153": "evening",
     "H6205": "thick darkness",
     "H6965": "arise"
 }

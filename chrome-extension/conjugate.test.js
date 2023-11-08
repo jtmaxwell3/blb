@@ -86,7 +86,7 @@ English: lights`, "lights (m)")
 
 run_test(`Transliteration: ʿal
 From the root עַל (H5921) - Hebrew: Preposition
-English: was over`, "on")
+English: was over`, "upon")
 
 run_test(`Transliteration: bᵊṯôḵ
 From the root תָּוֶךְ (H8432) - Hebrew: Preposition; Noun common masculine singular construct
@@ -102,7 +102,7 @@ English: your light`, "your (fs) light")
 
 run_test(`Transliteration: ʿālāy
 From the root עַל (H5921) - Hebrew: Preposition; Suffix pronominal first person common singular
-English: is upon me`, "on me")
+English: is upon me`, "upon me")
 
 run_test(`Transliteration: vᵊla'ăsûrîm
 From the root אָסַר (H631) - Hebrew: Conjunction; Preposition; Verb qal participle passive masculine plural absolute
@@ -122,7 +122,7 @@ English: And as a garden`, "and as garden (f)")
 
 run_test(`Transliteration: hēm
 From the root הֵם (H1992) - Hebrew: Pronoun personal third person masculine plural
-English: they`, "they (m)")
+English: they`, "them (m)")
 
 run_test(`Transliteration: lāḵēn
 From the root כֵּן (H3651) - Hebrew: Preposition; Adverb
@@ -142,11 +142,11 @@ English: together`, "as one (ms)")
 
 run_test(`Transliteration: šāmmâ
 From the root שָׁם (H8033) - Hebrew: Adverb; Suffix directional he
-English: there`, "there")
+English: there`, "there -ward")
 
 run_test(`Transliteration: kāzō'ṯ
 From the root זֹאת (H2063) - Hebrew: Preposition; Pronoun demonstrative  feminine singular
-English: such a thing`, "???")
+English: such a thing`, "as this (f)")
 
 run_test(`Transliteration: lāhem - Hebrew: Preposition; Suffix pronominal third person masculine plural
 English: theirs`, "to them (m)")
@@ -157,4 +157,8 @@ English: love`, "loving (m)")
 
 run_test(`Transliteration: kî
 From the root כִּי (H3588) - Hebrew: Conjunction
-English: that`, "that")
+English: that`, "for")
+
+run_test(`Transliteration: mēʿal
+From the root עַל (H5921) - Hebrew: Preposition; Preposition
+English: were above`, "from upon")

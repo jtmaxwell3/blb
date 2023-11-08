@@ -29,7 +29,7 @@ const observer = new MutationObserver((mutations, observer) => {
                 const header_row = header_rows[0]
                 // Add conjugation header to header row.
                 const conjugationHeader = document.createElement("div")
-                const newTitle = document.createTextNode("Conjugation");
+                const newTitle = document.createTextNode("Literal");
                 conjugationHeader.appendChild(newTitle);
                 conjugationHeader.classList = header_row.children[1].classList
                 header_row.children[4].remove()

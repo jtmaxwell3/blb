@@ -27,11 +27,9 @@ def choose_most_frequent_translations(translations):
     translation = dict()
     lemmatizer = WordNetLemmatizer()
     strongs_to_phrases = create_strongs_to_phrases(lemmatizer)
-    debug_source = None
+    debug_source = "H4729"
     for source in translations:
         targets = translations[source]
-        if source == debug_source:
-            print(source, 'targets:', targets)
         if len(targets) == 1:
             translation[source] = targets[0]
             continue
@@ -41,6 +39,9 @@ def choose_most_frequent_translations(translations):
             translation[source] = targets[0]
             continue
         phrases = strongs_to_phrases[source]
+        if source == debug_source:
+            print(source, 'targets:', targets)
+            print(source, 'has', len(phrases), 'phrases')
         for phrase in phrases:
             target = get_target_for_phrase(phrase, targets, lemmatizer, source == debug_source)
             if source == debug_source:
@@ -62,7 +63,7 @@ def choose_most_frequent_translations(translations):
             best_target = targets[0]
         lemmatized_target = lemmatize_text(best_target, lemmatizer)
         if lemmatized_target != best_target and lemmatized_target in targets:
-            print("lemmatized", best_target, "to", lemmatized_target)
+            # print("lemmatized", best_target, "to", lemmatized_target)
             best_target = lemmatized_target
         translation[source] = best_target
     return translation
@@ -253,9 +254,18 @@ def parse_kjv_def(text):
     if period > 0:
         text = text[0:period]
     definitions = split_by_commas(text)
-    # Deal with entries like "(dwelling) (place)".
-    while "" in definitions:
-        definitions.remove("")
+    # Filter definitions.
+    new_definitions = []
+    for definition in definitions:
+        if definition == "":
+            continue
+        if definition.find('...') > 0:
+            # Remove ellipsis.
+            continue
+        if definition.startswith('to '):
+            definition = definition[3:]
+        new_definitions.append(definition)
+    definitions = new_definitions
     return definitions
 
 
@@ -268,6 +278,11 @@ def find_period(text):
         elif text[i] == ')':
             parentheses += -1
         elif text[i] == '.' and parentheses == 0:
+            # Ignore '...'.
+            if i > 0 and text[i - 1] == '.':
+                continue
+            if i < len(text) - 1 and text[i + 1] == '.':
+                continue
             return i
     return -1
 

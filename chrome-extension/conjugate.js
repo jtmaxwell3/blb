@@ -34,19 +34,19 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     let conjugations = [];
     let unknowns = [];
     let word = get_English_for_Strongs(strongs)
-    let main_part_of_speech = "";
+    let last_form = forms[forms.length - 1];
     let has_suffix = false;
-    for (let j = 0; j < forms.length; j++) {
-        let form2 = forms[j].trim();
-        if (form2.startsWith("Suffix")) {
-            has_suffix = true;
-        }
-        let parts = ["Adjective", "Adverb", "Noun", "Verb"]
-        for (k = 0; k < parts.length; k++) {
-            pos = parts[k]
-            if (form2.startsWith(pos)) {
-                main_part_of_speech = pos
-            }
+    if (last_form.trim().startsWith("Suffix")) {
+        has_suffix = true;
+    }
+    let word_position = -1;
+    if (word) {
+        // There can only be one word form.
+        // It is in the last position unless there is a suffix.
+        if (has_suffix) {
+            word_position = forms.length - 2;
+        } else {
+            word_position = forms.length - 1;
         }
     }
     // Conjugate the forms.
@@ -112,9 +112,10 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 let term = terms[j];
                 unknowns.push(term)
             }
-            if (forms.length == 1) {
+            if (i == word_position) {
                 conjugations.push(word)
             } else {
+                // A clitic.
                 conjugations.push("and");
             }
         } else if (terms[0] == "Noun") {
@@ -166,31 +167,32 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             conjugations.push(conjugation);
         } else if (terms[0] == "Particle") {
             let conjugation = "";
-            if (!main_part_of_speech) {
-                // Most particles are standalone.
+            if (i == word_position) {
                 conjugation = word;
-            }
-            for (let j = 1; j < terms.length; j++) {
-                let term = terms[j];
-                if (term == "definite") {
-                    // Definite articles are attached.
-                    conjugation = "the";
-                } else if (term == "interrogative") {
-                    // Definite articles are attached.
-                    conjugation = "¿";
+            } else {
+                // A clitic.
+                for (let j = 1; j < terms.length; j++) {
+                    let term = terms[j];
+                    if (term == "definite") {
+                        // Definite articles are attached.
+                        conjugation = "the";
+                    } else if (term == "interrogative") {
+                        // Definite articles are attached.
+                        conjugation = "¿";
+                    }
                 }
             }
             if (!conjugation) {
                 // An unknown attached particle.
                 conjugation = "???";
-                unknowns.push(terms)
+                unknowns = unknowns.concat(terms);
             }
             conjugations.push(conjugation);
         } else if (terms[0] == "Preposition") {
-            if (!main_part_of_speech && word) {
+            if (i == word_position) {
                 conjugation = word;
             } else {
-                // This is an attached preposition.
+                // A clitic.
                 preposition = "";
                 if (forms[0] == "Conjunction") {
                     // Skip the vav.
@@ -266,22 +268,39 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 }
             }
             // Generate conjugation.
-            let conjugation = get_subject_pronoun(person, gender, number, false)
+            let conjugation;
+            if (i == word_position) {
+                conjugation = word;
+                if (number == "p") {
+                    conjugation = get_noun_inflection(word, "PL");
+                }
+                if (gender != "") {
+                    conjugation += " (" + gender + ")"
+                }
+            } else {
+                // A clitic.
+                conjugation = get_subject_pronoun(person, gender, number, false)
+            }
             conjugations.push(conjugation)
         } else if (terms[0] == "Suffix") {
             let gender = "";
             let number = "";
             let person = "";
             let voice = "";
+            let he = "";
             // Process terms.
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
                 if (term == "common") {
                     // Skip.
+                } else if (term == "directional") {
+                    he = "-ward";
                 } else if (term == "feminine") {
                     gender = "f";
                 } else if (term == "first") {
                     person = "1";
+                } else if (term == "he") {
+                    // Skip.
                 } else if (term == "masculine") {
                     gender = "m";
                 } else if (term == "plural") {
@@ -302,9 +321,13 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             // Generate conjugation.
             let conjugation = "";
-            if (main_part_of_speech == "Noun") {
+            if (he) {
+                // 'He' is a suffix with special meaning.
+                conjugation = he;
+                conjugations.push(conjugation);
+            } else if (forms[i - 1].trim().startsWith("Noun")) {
                 conjugation = get_possessive_pronoun(person, gender, number);
-                // Put the conjugation before the prior form.
+                // Put the conjugation before the noun.
                 conjugations.splice(conjugations.length - 1, 0, conjugation)
             } else {
                 conjugation = get_object_pronoun(person, gender, number);
@@ -466,21 +489,33 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     }
     // Deal with unknowns.
     if (unknowns.length > 0) {
-        console.log(transliteration, word, "unknowns = ", unknowns)
+        unknown_str = "";
+        for (let i = 0; i < unknowns.length; i++) {
+            if (unknown_str != "") {
+                unknown_str += " ";
+            }
+            unknown_str += unknowns[i];
+        }
+        console.log(transliteration, word, "unknowns =", unknown_str)
         if (result == "") {
             result = word;
         }
-        result += " ???";
+        result += " (" + unknown_str + ")";
     }
     return result;
 }
 
 function get_noun_inflection(word, form) {
-    if (word == "heaven" && form == "PL") {
-        return "heavens";
-    }
-    if (word == "water" && form == "PL") {
-        return "waters";
+    if (form == "PL") {
+        if (word == "heaven") {
+            return "heavens";
+        }
+        if (word == "them") {
+            return word;
+        }
+        if (word == "water") {
+            return "waters";
+        }
     }
     results = get_plural(word);
     for (let i = 0; i < results[1].length; i++) {
