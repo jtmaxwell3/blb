@@ -6,6 +6,8 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 
 nltk.download('wordnet')
+lemmatizer = WordNetLemmatizer()
+
 
 def create_strongs_to_english():
     """Create a dictionary from strong's numbers to english."""
@@ -25,11 +27,12 @@ def create_strongs_to_english():
 
 def choose_most_frequent_translations(translations):
     translation = dict()
-    lemmatizer = WordNetLemmatizer()
-    strongs_to_phrases = create_strongs_to_phrases(lemmatizer)
-    debug_source = "H4729"
+    strongs_to_phrases = create_strongs_to_phrases()
+    debug_source = "H5389"
     for source in translations:
         targets = translations[source]
+        if source == debug_source:
+            print(source, 'targets:', targets)
         if len(targets) == 1:
             translation[source] = targets[0]
             continue
@@ -40,12 +43,11 @@ def choose_most_frequent_translations(translations):
             continue
         phrases = strongs_to_phrases[source]
         if source == debug_source:
-            print(source, 'targets:', targets)
             print(source, 'has', len(phrases), 'phrases')
         for phrase in phrases:
-            target = get_target_for_phrase(phrase, targets, lemmatizer, source == debug_source)
+            target = get_target_for_phrase(phrase, targets, source == debug_source)
             if source == debug_source:
-                print(target, 'is target for', phrase)
+                print("'" + target + "'", 'is target for', "'" + phrase + "'")
             if not target:
                 continue
             if target not in frequency:
@@ -61,7 +63,7 @@ def choose_most_frequent_translations(translations):
                 best_frequency = frequency[target]
         if not best_target:
             best_target = targets[0]
-        lemmatized_target = lemmatize_text(best_target, lemmatizer)
+        lemmatized_target = lemmatize_text(best_target)
         if lemmatized_target != best_target and lemmatized_target in targets:
             # print("lemmatized", best_target, "to", lemmatized_target)
             best_target = lemmatized_target
@@ -69,11 +71,11 @@ def choose_most_frequent_translations(translations):
     return translation
 
 
-def get_target_for_phrase(phrase, targets, lemmatizer, debug=False):
+def get_target_for_phrase(phrase, targets, debug=False):
     best_target = None
     best_lemma = None
     for target in targets:
-        lemma = lemmatize_text(target, lemmatizer)
+        lemma = lemmatize_text(target)
         pos = phrase.find(lemma)
         if pos != -1:
             if pos > 0 and phrase[pos - 1].isalnum():
@@ -105,11 +107,9 @@ def get_target_for_phrase(phrase, targets, lemmatizer, debug=False):
     return best_target
 
 
-def create_strongs_to_phrases(lemmatizer=None):
+def create_strongs_to_phrases():
     directory = '../../../interlinear_bible'
     dictionary = dict()
-    if not lemmatizer:
-        lemmatizer = WordNetLemmatizer()
     for filename in os.listdir(directory):
         fullname = os.path.join(directory, filename)
         print('Reading', fullname)
@@ -123,13 +123,13 @@ def create_strongs_to_phrases(lemmatizer=None):
                         dictionary[strongs] = list()
                     text = word['text']
                     if text:
-                        lemmatized_text = lemmatize_text(text, lemmatizer)
+                        lemmatized_text = lemmatize_text(text)
                         # print(text, '=>', lemmatized_text)
                         dictionary[strongs].append(lemmatized_text)
     return dictionary
 
 
-def lemmatize_text(text, lemmatizer):
+def lemmatize_text(text):
     text = text.lower()
     text = re.sub(r'[^\w\s]', '', text)
     new_text = ''
@@ -141,6 +141,8 @@ def lemmatize_text(text, lemmatizer):
             continue
         noun = lemmatizer.lemmatize(word, 'n')
         verb = lemmatizer.lemmatize(word, 'v')
+        if word == 'men':
+            noun = 'man'
         if verb != word:
             word = verb
         elif noun != word and not (word[-1] == 's' and word[-2] == 's'):
@@ -383,7 +385,7 @@ def combine_phrases(phrase1, phrase2):
         result = phrase1[:-1] + phrase2
     elif phrase1[-1] == 'y' and phrase2[0] == 'i':
         result = phrase1[:-1] + phrase2
-    print(phrase1, "+", phrase2, "=", result)
+    # print(phrase1, "+", phrase2, "=", result)
     return result
 
 

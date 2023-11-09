@@ -162,3 +162,7 @@ English: that`, "for")
 run_test(`Transliteration: mēʿal
 From the root עַל (H5921) - Hebrew: Preposition; Preposition
 English: were above`, "from upon")
+
+run_test(`Transliteration: šᵊnāṯayim
+From the root שָׁנָה (H8141) - Hebrew: Noun common feminine dual absolute
+English: two years`, "two years (f)")

@@ -507,8 +507,14 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
 
 function get_noun_inflection(word, form) {
     if (form == "PL") {
+        if (word == "face") {
+            return word;
+        }
         if (word == "heaven") {
             return "heavens";
+        }
+        if (word == "Lord") {
+            return word;
         }
         if (word == "them") {
             return word;

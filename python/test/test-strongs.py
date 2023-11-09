@@ -9,10 +9,8 @@ class Test(unittest.TestCase):
     def test_lemmatize_text(self):
 
         def run_test(test, gold):
-            result = lemmatize_text(test, lemmatizer)
+            result = lemmatize_text(test)
             self.assertEqual(gold, result)
-
-        lemmatizer = WordNetLemmatizer()
 
         # run_test('saw', 'see')
         # run_test('beginning', 'beginning')
@@ -31,6 +29,8 @@ class Test(unittest.TestCase):
         run_test('pass', 'pass')
         run_test('sheddeth', 'shed')
         run_test('sheweth', 'shew')
+        run_test('men', 'man')
+        run_test('women', 'woman')
 
     def test_combine_phrases(self):
 

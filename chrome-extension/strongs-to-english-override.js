@@ -1,6 +1,9 @@
 var strongs_to_english_override = {
+    "H518": "if",
     "H853": "(dobj)",
     "H935": "come",
+    "H3068": "the LORD",
+    "H3069": "GOD",
     "H3588": "for",
     "H3605": "all",
     "H3808": "not",
