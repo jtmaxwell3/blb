@@ -166,3 +166,11 @@ English: were above`, "from upon")
 run_test(`Transliteration: šᵊnāṯayim
 From the root שָׁנָה (H8141) - Hebrew: Noun common feminine dual absolute
 English: two years`, "two years (f)")
+
+run_test(`Transliteration: lᵊhiṯyaṣṣēḇ
+From the root יָצַב (H3320) - Hebrew: Preposition; Verb hithpael infinitive construct
+English: to present themselves`, "to stand of")
+
+run_test(`Transliteration: 'ănaḥnû
+From the root אֲנַחְנוּ (H587) - Hebrew: Pronoun personal first person common plural
+English: we`, "we")

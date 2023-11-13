@@ -33,27 +33,33 @@ function conjugate(description) {
 function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     let conjugations = [];
     let unknowns = [];
-    let word = get_English_for_Strongs(strongs)
     let last_form = forms[forms.length - 1];
     let has_suffix = false;
     if (last_form.trim().startsWith("Suffix")) {
         has_suffix = true;
     }
     let word_position = -1;
-    if (word) {
-        // There can only be one word form.
-        // It is in the last position unless there is a suffix.
-        if (has_suffix) {
-            word_position = forms.length - 2;
-        } else {
-            word_position = forms.length - 1;
-        }
+    // There can only be one word form.
+    // It is in the last position unless there is a suffix.
+    if (has_suffix) {
+        word_position = forms.length - 2;
+    } else {
+        word_position = forms.length - 1;
     }
     // Conjugate the forms.
     for (let i = 0; i < forms.length; i++) {
         const form = forms[i];
         // Split the form into terms.
-        const terms = form.trim().split(/\s+/);
+        var terms = form.trim().split(/\s+/);
+        let word = ""
+        if (i == word_position) {
+            result = get_English_for_Strongs(strongs, terms);
+            word = result[0];
+            terms = result[1];
+            if (word == "") {
+                word_position = -1;
+            }
+        }
         let conjugation = "";
         // Branch on the first term.
         if (terms[0] == "Adjective") {
@@ -271,9 +277,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let conjugation;
             if (i == word_position) {
                 conjugation = word;
-                if (number == "p") {
-                    conjugation = get_noun_inflection(word, "PL");
-                }
+                // Word should already be marked for number.
                 if (gender != "") {
                     conjugation += " (" + gender + ")"
                 }
@@ -658,18 +662,18 @@ function get_subject_pronoun(person, gender, number, implicit) {
     return "???"
 }
 
-function get_English_for_Strongs(strongs) {
+function get_English_for_Strongs(strongs, terms) {
     if (!strongs) {
-        return ""
+        return ["", terms]
     }
     if (strongs in strongs_to_english_override) {
-        return strongs_to_english_override[strongs];
+        return [strongs_to_english_override[strongs], terms];
     }
     if (node_strongs_to_english) {
         // This is so we can run tests using node.js.
-        return node_strongs_to_english[strongs]
+        return [node_strongs_to_english[strongs], terms]
     } else {
-        return strongs_to_english[strongs]
+        return [strongs_to_english[strongs], terms]
     }
 }
 

@@ -28,7 +28,7 @@ def create_strongs_to_english():
 def choose_most_frequent_translations(translations):
     translation = dict()
     strongs_to_phrases = create_strongs_to_phrases()
-    debug_source = "H5389"
+    debug_source = "H7462"
     for source in translations:
         targets = translations[source]
         if source == debug_source:
@@ -47,7 +47,7 @@ def choose_most_frequent_translations(translations):
         for phrase in phrases:
             target = get_target_for_phrase(phrase, targets, source == debug_source)
             if source == debug_source:
-                print("'" + target + "'", 'is target for', "'" + phrase + "'")
+                print("'" + str(target) + "'", 'is target for', "'" + phrase + "'")
             if not target:
                 continue
             if target not in frequency:
@@ -310,7 +310,7 @@ def find_comma(text):
             parentheses += 1
         elif text[i] == ')':
             parentheses += -1
-        elif text[i] == ',' and parentheses == 0:
+        elif text[i] in [',', ';'] and parentheses == 0:
             return i
     return -1
 

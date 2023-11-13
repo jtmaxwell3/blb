@@ -27,6 +27,19 @@ const observer = new MutationObserver((mutations, observer) => {
             const header_rows = mutation.target.getElementsByClassName("header-row");
             if (header_rows.length == 1) {
                 const header_row = header_rows[0]
+                const rows = mutation.target.getElementsByClassName("row");
+                // Check whether there is a row with Hebrew.
+                var valid_row = false;
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i]
+                    const parseDiv = row.children[4].children[0]
+                    if (parseDiv.title.indexOf("Hebrew:") != -1) {
+                        valid_row = true;
+                    }
+                }
+                if (!valid_row) {
+                    return;
+                }
                 // Add conjugation header to header row.
                 const conjugationHeader = document.createElement("div")
                 const newTitle = document.createTextNode("Literal");
@@ -36,7 +49,6 @@ const observer = new MutationObserver((mutations, observer) => {
                 header_row.children[3].remove()
                 header_row.children[1].after(conjugationHeader)
                 // Add conjugation element to each row.
-                const rows = mutation.target.getElementsByClassName("row");
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i]
                     const parseDiv = row.children[4].children[0]
