@@ -28,7 +28,7 @@ def create_strongs_to_english():
 def choose_most_frequent_translations(translations):
     translation = dict()
     strongs_to_phrases = create_strongs_to_phrases()
-    debug_source = "H7462"
+    debug_source = "H2470"
     for source in translations:
         targets = translations[source]
         if source == debug_source:
@@ -232,17 +232,20 @@ def get_strongs_dict_translations(filename):
 
 def get_entry_translations(entry):
     """Get the translations from an open scripture entry."""
-    translations = None
+    translations = []
     if 'kjv_def' in entry:
         translations = parse_kjv_def(entry['kjv_def'])
-    if not translations:
-        translations = parse_kjv_def(entry['strongs_def'])
+    if 'strongs_def' in entry:
+        translations += parse_kjv_def(entry['strongs_def'])
     if len(translations) == 0:
         print('ERROR no entries for', entry)
     return translations
 
 
 def parse_kjv_def(text):
+    # Remove curly brackets.
+    text = text.replace('{', '')
+    text = text.replace('}', '')
     # Remove square brackets.
     while True:
         begin = text.find('[')
@@ -259,13 +262,23 @@ def parse_kjv_def(text):
     # Filter definitions.
     new_definitions = []
     for definition in definitions:
-        if definition == "":
-            continue
         if definition.find('...') > 0:
             # Remove ellipsis.
             continue
+        if definition.startswith("'"):
+            definition = definition[1:]
+            if definition.endswith("'"):
+                definition = definition[:-1]
+        if definition.startswith('a '):
+            definition = definition[2:]
+        if definition.startswith('an '):
+            definition = definition[3:]
+        if definition.startswith('the '):
+            definition = definition[4:]
         if definition.startswith('to '):
             definition = definition[3:]
+        if definition == "" or definition == 'i':
+            continue
         new_definitions.append(definition)
     definitions = new_definitions
     return definitions
