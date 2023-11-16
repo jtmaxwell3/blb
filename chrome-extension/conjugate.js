@@ -446,13 +446,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             // Get participial form.
             if (passive) {
-                if (participle || infinitive) {
-                    verb = get_verb_inflection(verb, "PP")
-                } else {
-                    verb = "be " + get_verb_inflection(verb, "PP")
-                }
+                verb = "be " + get_verb_inflection(verb, "PP")
             }
-            if (imperfect || (participle && !passive)) {
+            if (imperfect) {
                 verb = get_verb_inflection(verb, "PC");
             }
             if (reflexive) {
@@ -463,9 +459,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             let conjugation = verb;
             if (participle) {
-                if (number == "p") {
-                    conjugation = get_noun_inflection(conjugation, "PL")
-                }
+                conjugation = "that which " + conjugation;
                 if (gender) {
                     conjugation += " (" + gender + ")";
                 }
@@ -569,11 +563,11 @@ function get_object_pronoun(person, gender, number) {
     } else if (person == "3") {
         if (number == "s") {
             if (gender == "f") {
-                return "her/it";
+                return "her";
             } else if (gender == "m") {
-                return "him/it";
+                return "him";
             } else {
-                return "him/her/it";
+                return "it";
             }
         } else {
             return "them (" + gender + ")";
@@ -594,11 +588,11 @@ function get_possessive_pronoun(person, gender, number) {
     } else if (person == "3") {
         if (number == "s") {
             if (gender == "f") {
-                return "her/its";
+                return "her";
             } else if (gender == "m") {
-                return "his/its";
+                return "his";
             } else {
-                return "his/her/its";
+                return "its";
             }
         } else {
             return "their (" + gender + ")";
@@ -623,11 +617,11 @@ function get_reflexive_pronoun(person, gender, number) {
     } else if (person == "3") {
         if (number == "s") {
             if (gender == "m") {
-                return "himself/itself";
+                return "himself";
             } else if (gender == "f") {
-                return "herself/itself";
+                return "herself";
             } else {
-                return "himself/herself/itself";
+                return "itself";
             }
         }
     }
@@ -652,11 +646,11 @@ function get_subject_pronoun(person, gender, number, implicit) {
             }
             return "they";
         } else if (gender == "m") {
-            return "he/it";
+            return "he";
         } else if (gender == "f") {
-            return "she/it";
+            return "she";
         } else {
-            return "he/she/it";
+            return "it";
         }
     }
     return "???"

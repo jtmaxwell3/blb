@@ -4408,7 +4408,7 @@ var strongs_to_english = {
 "H4407": "Millo",
 "H4408": "mallows",
 "H4409": "Malluch",
-"H4410": "royal",
+"H4410": "kingdom",
 "H4411": "inn",
 "H4412": "lodge",
 "H4413": "Mallothi",
