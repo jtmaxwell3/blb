@@ -35,7 +35,7 @@ English: created`, "(3ms) be really created")
 
 run_test(`Transliteration: bārā'
 From the root בָּרָא (H1254) - Hebrew: Verb hithpael perfect third person masculine singular
-English: created`, "(3ms) create himself/itself")
+English: created`, "(3ms) create himself")
 
 run_test(`Transliteration: bārā'
 From the root בָּרָא (H1254) - Hebrew: Verb hiphil perfect third person masculine singular
@@ -63,7 +63,7 @@ English: created`, "(3ms) being really created")
 
 run_test(`Transliteration: bārā'
 From the root בָּרָא (H1254) - Hebrew: Verb hithpael imperfect third person masculine singular
-English: created`, "(3ms) creating himself/itself")
+English: created`, "(3ms) creating himself")
 
 run_test(`Transliteration: bārā'
 From the root בָּרָא (H1254) - Hebrew: Verb hiphil imperfect third person masculine singular
@@ -94,7 +94,7 @@ English: in the midst`, id="in midst (m) of")
 
 run_test(`Transliteration: ûḵḇôḏô
 From the root כָּבוֹד (H3519) - Hebrew: Conjunction; Noun common both singular construct; Suffix pronominal third person masculine singular
-English: And His glory`, "and his/its glory")
+English: And His glory`, "and his glory")
 
 run_test(`Transliteration: 'ôrēḵ
 From the root אוֹר (H216) - Hebrew: Noun common both singular construct; Suffix pronominal second person feminine singular
@@ -106,7 +106,7 @@ English: is upon me`, "upon me")
 
 run_test(`Transliteration: vᵊla'ăsûrîm
 From the root אָסַר (H631) - Hebrew: Conjunction; Preposition; Verb qal participle passive masculine plural absolute
-English: ↓`, "and to bounds (m)")
+English: ↓`, "and to that which be bound (m)")
 
 run_test(`Transliteration: ʿănāvîm
 From the root עָנָו (H6035) - Hebrew: Adjective adjective masculine plural absolute
@@ -126,7 +126,7 @@ English: they`, "them (m)")
 
 run_test(`Transliteration: lāḵēn
 From the root כֵּן (H3651) - Hebrew: Preposition; Adverb
-English: Therefore`, "to as")
+English: Therefore`, "to so")
 
 run_test(`Transliteration: ûḇiḵḇôḏām
 From the root כָּבוֹד (H3519) - Hebrew: Conjunction; Preposition; Noun common both singular construct; Suffix pronominal third person masculine plural
@@ -153,7 +153,7 @@ English: theirs`, "to them (m)")
 
 run_test(`Transliteration: 'ōhēḇ
 From the root אָהַב (H157) - Hebrew: Verb qal participle active masculine singular absolute
-English: love`, "loving (m)")
+English: love`, "that which love (m)")
 
 run_test(`Transliteration: kî
 From the root כִּי (H3588) - Hebrew: Conjunction

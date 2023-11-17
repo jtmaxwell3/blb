@@ -29,6 +29,7 @@ class Test(unittest.TestCase):
         run_test('pass', 'pass')
         run_test('sheddeth', 'shed')
         run_test('sheweth', 'shew')
+        run_test('stumbling-block', 'stumblingblock')
         run_test('men', 'man')
         run_test('women', 'woman')
 

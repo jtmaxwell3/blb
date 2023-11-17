@@ -457,13 +457,19 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             if (jussive) {
                 verb = "let " + verb;
             }
-            let conjugation = verb;
+            let conjugation;
             if (participle) {
-                conjugation = "that which " + conjugation;
+                conjugation = "that which " + verb;
                 if (gender) {
                     conjugation += " (" + gender + ")";
                 }
-            } else if (!infinitive) {
+            } else if (jussive || imperative) {
+                if (gender || number) {
+                    conjugation = "(" + gender + number + ") " + verb;
+                }
+            } else if (infinitive) {
+                conjugation = verb;
+            } else {
                 conjugation = get_subject_pronoun(person, gender, number, true) + " " + verb;
             }
             if (imperative) {

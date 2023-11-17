@@ -28,7 +28,8 @@ def create_strongs_to_english():
 def choose_most_frequent_translations(translations):
     translation = dict()
     strongs_to_phrases = create_strongs_to_phrases()
-    debug_source = "H2470"
+    data = list()
+    debug_source = "H4036"
     for source in translations:
         targets = translations[source]
         if source == debug_source:
@@ -68,7 +69,21 @@ def choose_most_frequent_translations(translations):
             # print("lemmatized", best_target, "to", lemmatized_target)
             best_target = lemmatized_target
         translation[source] = best_target
+        num_phrases = len(phrases)
+        if num_phrases == 0:
+            num_phrases = 1
+        data.append([source, best_target, len(phrases), best_frequency / num_phrases])
+    # write_translation_data(data, '../data/translation-data.txt')
     return translation
+
+
+def write_translation_data(data, filename):
+    data.sort(reverse=True, key=lambda item: item[2])
+    file = open(filename, 'w')
+    for item in data:
+        file.write(item[0] + " " + item[1] + " " + str(item[2]) + " " + str(item[3]) + "\n")
+    file.close()
+    print('wrote', filename)
 
 
 def get_target_for_phrase(phrase, targets, debug=False):
@@ -131,6 +146,7 @@ def create_strongs_to_phrases():
 
 def lemmatize_text(text):
     text = text.lower()
+    # Get rid of extraneous characters.
     text = re.sub(r'[^\w\s]', '', text)
     new_text = ''
     for word in text.split(' '):
