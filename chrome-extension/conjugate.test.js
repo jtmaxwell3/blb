@@ -174,3 +174,15 @@ English: to present themselves`, "to stand of")
 run_test(`Transliteration: 'ănaḥnû
 From the root אֲנַחְנוּ (H587) - Hebrew: Pronoun personal first person common plural
 English: we`, "we")
+
+run_test(`Transliteration: ṣāp̄naṯ
+From the root צָֽפְנַת פַּעְנֵחַ (H6847) - Hebrew: Noun proper name
+English: Zaphenath-paneah`, "Zaphnath-paaneah")
+
+run_test(`Transliteration: lᵊp̄ānāyv
+From the root פָּנִים (H6440) - Hebrew: Preposition; Noun common both plural construct; Suffix pronominal third person masculine singular
+English: before Him`, "before him")
+
+run_test(`Transliteration: lip̄nê
+From the root פָּנִים (H6440) - Hebrew: Preposition; Noun common both plural construct
+English: before`, "before")

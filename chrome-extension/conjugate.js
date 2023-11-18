@@ -22,9 +22,15 @@ function conjugate(description) {
     let section3 = description.substring(pos3 + 8, description.length).trim();
     let words = section1.trim().split(/\s+/);
     let transliteration = words[0];
-    let strongs = words[5];
-    if (strongs) {
-        strongs = strongs.substring(1, strongs.length - 1);
+    let strongs = "";
+    // There can be more than one Hebrew form.
+    // The Strong's number will be surrounded by parentheses.
+    for (let i = 5; i < words.length; i++) {
+        strongs = words[i];
+        if (strongs[0] == '(') {
+            strongs = strongs.substring(1, strongs.length - 1);
+            break;
+        }
     }
     let forms = section2.split(";")
     return conjugate_Hebrew_as_English(transliteration, strongs, forms)
@@ -140,7 +146,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "dual") {
                     number = "p";
                 } else if (term == "construct") {
-                    if (! has_suffix) {
+                    if (!has_suffix) {
                         construct = " of";
                     }
                 } else if (term == "feminine") {
@@ -169,8 +175,16 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             if (gender != "") {
                 conjugation += " (" + gender + ")"
             }
-            conjugation += construct;
-            conjugations.push(conjugation);
+            if (conjugation == "faces" &&
+                conjugations.length == 1 && conjugations[0] == "to") {
+                // "to faces" is translated as the preposition "before"
+                // This is common enough to write special code for it.
+                conjugations = ["before"];
+                forms[i] = "Preposition";
+            } else {
+                conjugation += construct;
+                conjugations.push(conjugation);
+            }
         } else if (terms[0] == "Particle") {
             let conjugation = "";
             if (i == word_position) {
@@ -511,9 +525,6 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
 
 function get_noun_inflection(word, form) {
     if (form == "PL") {
-        if (word == "face") {
-            return word;
-        }
         if (word == "heaven") {
             return "heavens";
         }

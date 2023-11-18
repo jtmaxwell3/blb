@@ -6,7 +6,14 @@ var strongs_to_english_override = {
     "H75": "fatten",  // better part of speech than "fatted"
     "H76": "blister", // less archaic than "blain"
     "H95": "piece",  // piece silver was wrong
+    "H102": "band",  // "bands" was wrong
+    "H142": "be glorious", // better part of speech and more common than "honorable"
+    "H167": "pitch tent", // better part of speech than "tent"
     "H168": "tent",  // more general than "tabernacle"
+    "H174": "aloe",  // better than "aloes"
+    "H182": "cause",  // better part of speech than "because"
+    "H192": "foolish",  // better part of speech than "fool"
+    "H194": "perhaps",  // less archaic than "peradventure"
     "H408": "not",  // less archaic than "nay"
     "H802": "woman",  // More general than "wife"
     "H518": "if",  // fits better than "or"
@@ -36,11 +43,13 @@ var strongs_to_english_override = {
     "H5750": "still",  // fits better than "yet"
     "H5769": "forever",  // prefer over "for ever"
     "H6153": "evening",  // less archaic than "even"
+    "H6468": "wage",  // More common meaning than "work"
     "H6944": "holiness",  // better part of speech than "holy"
     "H7126": "come near",  // more general than "offer"
     "H7130": "midst",  // [in] midst [of] is better part of speech than "among"
     "H7311": "be high",  // better for Qal than "exalt"
     "H7901": "lie down",  // less ambiguous than "lie"
+    "H7939": "reward",  // more general than "hire", just as frequent
     "H8252": "be quiet",  // better for Qal than "quiet"
 }
 

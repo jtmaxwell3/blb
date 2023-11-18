@@ -22,17 +22,21 @@ if (pageCont && lexResults && bibleTable) {
 const observer = new MutationObserver((mutations, observer) => {
     for (let i = 0; i < mutations.length; i++) {
         const mutation = mutations[i]
-        if (mutation.target.id == "interruptDiv") {
-            // This is the only mutation we see from document.
+        // console.log("mutation", mutation.target.id)
+        if (mutation.target.id == "interruptDiv"  || mutation.target.id == "bodTag") {
+            // interruptDiv is for search results, bodTag is for Strong's entries
             const header_rows = mutation.target.getElementsByClassName("header-row");
             if (header_rows.length == 1) {
                 const header_row = header_rows[0]
                 const rows = mutation.target.getElementsByClassName("row");
+                if (rows.length > 0 && !rows[0].children[4]) {
+                    continue;
+                }
                 // Check whether there is a row with Hebrew.
                 var valid_row = false;
                 for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i]
-                    const parseDiv = row.children[4].children[0]
+                    const row = rows[i];
+                    const parseDiv = row.children[4].children[0];
                     if (parseDiv.title.indexOf("Hebrew:") != -1) {
                         valid_row = true;
                     }
