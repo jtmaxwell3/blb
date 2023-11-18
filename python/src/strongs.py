@@ -73,12 +73,12 @@ def choose_most_frequent_translations(translations):
         if num_phrases == 0:
             num_phrases = 1
         data.append([source, best_target, len(phrases), best_frequency / num_phrases])
-    # write_translation_data(data, '../data/translation-data.txt')
+    # write_translation_data(data, '../data/translation-data2.txt')
     return translation
 
 
 def write_translation_data(data, filename):
-    data.sort(reverse=True, key=lambda item: item[2])
+    # data.sort(reverse=True, key=lambda item: item[2])
     file = open(filename, 'w')
     for item in data:
         file.write(item[0] + " " + item[1] + " " + str(item[2]) + " " + str(item[3]) + "\n")
