@@ -199,6 +199,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     } else if (term == "interrogative") {
                         // Definite articles are attached.
                         conjugation = "¿";
+                    } else if (term == "relative") {
+                        conjugation = "which";
                     }
                 }
             }
@@ -415,6 +417,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     intensive = true;
                 } else if (term == "pilel") {
                     intensive = true;
+                } else if (term == "pulal") {
+                    intensive = true;
+                    passive = true;
                 } else if (term == "plural") {
                     number = "p";
                 } else if (term == "polel") {
@@ -507,13 +512,15 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     }
     // Deal with unknowns.
     if (unknowns.length > 0) {
-        unknown_str = "";
+        let unknown_str = "";
         for (let i = 0; i < unknowns.length; i++) {
             if (unknown_str != "") {
                 unknown_str += " ";
             }
             unknown_str += unknowns[i];
         }
+        let result = get_English_for_Strongs(strongs, terms);
+        let word = result[0];
         console.log(transliteration, word, "unknowns =", unknown_str)
         if (result == "") {
             result = word;
@@ -532,6 +539,9 @@ function get_noun_inflection(word, form) {
             return word;
         }
         if (word == "them") {
+            return word;
+        }
+        if (word == "these") {
             return word;
         }
         if (word == "water") {

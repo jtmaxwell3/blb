@@ -186,3 +186,19 @@ English: before Him`, "before him")
 run_test(`Transliteration: lip̄nê
 From the root פָּנִים (H6440) - Hebrew: Preposition; Noun common both plural construct
 English: before`, "before")
+
+run_test(`Transliteration: šehāyâ
+From the root הָיָה (H1961) - Hebrew: Particle relative; Verb qal perfect third person masculine singular
+English: to being`, "which (3ms) be")
+
+run_test(`Transliteration: hammazkirîm
+From the root זָכַר (H2142) - Hebrew: Particle definite article; Verb hiphil participle active masculine plural absolute
+English: You who remind`, "the that which cause to remember (mp)")
+
+run_test(`Transliteration: vᵊhā'ălāp̄îm
+From the root אֶלֶף (H504) - Hebrew: Conjunction; Particle definite article; Noun common masculine plural absolute
+English: Also the oxen`, "and the oxen (m)")
+
+run_test(`title="Transliteration: vᵊ'umlal
+From the root אָמַל (H535) - Hebrew: Conjunction; Verb pulal sequential perfect third person masculine singular
+English: And languishes`, "and (3ms) being really weakened")
