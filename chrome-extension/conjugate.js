@@ -52,6 +52,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     } else {
         word_position = forms.length - 1;
     }
+    let word_terms = "";
     // Conjugate the forms.
     for (let i = 0; i < forms.length; i++) {
         const form = forms[i];
@@ -59,6 +60,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
         var terms = form.trim().split(/\s+/);
         let word = ""
         if (i == word_position) {
+            word_terms = terms;
             result = get_English_for_Strongs(strongs, terms);
             word = result[0];
             terms = result[1];
@@ -341,11 +343,12 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             // Generate conjugation.
             let conjugation = "";
+            let priorForm = forms[i - 1].trim();
             if (he) {
                 // 'He' is a suffix with special meaning.
                 conjugation = he;
                 conjugations.push(conjugation);
-            } else if (forms[i - 1].trim().startsWith("Noun")) {
+            } else if (priorForm.startsWith("Noun") || priorForm.startsWith("Adjective")) {
                 conjugation = get_possessive_pronoun(person, gender, number);
                 // Put the conjugation before the noun.
                 conjugations.splice(conjugations.length - 1, 0, conjugation)
@@ -470,7 +473,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             if (imperfect) {
                 verb = get_verb_inflection(verb, "PC");
             }
-            if (reflexive) {
+            if (reflexive && (person || gender || number)) {
                 verb += " " + get_reflexive_pronoun(person, gender, number);
             }
             if (jussive) {
@@ -519,7 +522,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             unknown_str += unknowns[i];
         }
-        let result = get_English_for_Strongs(strongs, terms);
+        let result = get_English_for_Strongs(strongs, word_terms);
         let word = result[0];
         console.log(transliteration, word, "unknowns =", unknown_str)
         if (result == "") {
@@ -600,6 +603,7 @@ function get_object_pronoun(person, gender, number) {
             return "them (" + gender + ")";
         }
     }
+    console.log("Unknown object pronoun: " + person + gender + number);
     return "???";
 }
 
@@ -625,6 +629,7 @@ function get_possessive_pronoun(person, gender, number) {
             return "their (" + gender + ")";
         }
     }
+    console.log("Unknown poss. pronoun: " + person + gender + number);
     return "???";
 }
 
@@ -650,8 +655,12 @@ function get_reflexive_pronoun(person, gender, number) {
             } else {
                 return "itself";
             }
+        } else {
+            // Gender will be expressed elsewhere.
+            return "themselves"
         }
     }
+    console.log("Unknown reflexive pronoun: " + person + gender + number);
     return "???"
 }
 
@@ -680,6 +689,7 @@ function get_subject_pronoun(person, gender, number, implicit) {
             return "it";
         }
     }
+    console.log("Unknown subject pronoun: " + person + gender + number);
     return "???"
 }
 
@@ -688,7 +698,24 @@ function get_English_for_Strongs(strongs, terms) {
         return ["", terms]
     }
     if (strongs in strongs_to_english_override) {
-        return [strongs_to_english_override[strongs], terms];
+        let entry = strongs_to_english_override[strongs];
+        if (typeof entry == "string") {
+            return [entry, terms]
+        }
+        for (let i = 0; i < entry.length; i++) {
+            let item = entry[i];
+            if (typeof item == "string") {
+                return [item, terms]
+            }
+            if (is_subset(item[1], terms)) {
+                if (!item[2]) {
+                    return [item[0], terms]
+                }
+                // Replace item[1] with item[2] in terms.
+                let new_terms = item[2].concat(terms.slice(item[1].length))
+                return [item[0], new_terms]
+            }
+        }
     }
     if (node_strongs_to_english) {
         // This is so we can run tests using node.js.
@@ -696,6 +723,15 @@ function get_English_for_Strongs(strongs, terms) {
     } else {
         return [strongs_to_english[strongs], terms]
     }
+}
+
+function is_subset(array1, array2) {
+    for (let i = 0; i < array1.length; i++) {
+        if (!array2.includes(array1[i])) {
+            return false
+        }
+    }
+    return true
 }
 
 if (typeof window === 'undefined') {

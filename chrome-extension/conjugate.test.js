@@ -202,3 +202,23 @@ English: Also the oxen`, "and the oxen (m)")
 run_test(`title="Transliteration: vᵊ'umlal
 From the root אָמַל (H535) - Hebrew: Conjunction; Verb pulal sequential perfect third person masculine singular
 English: And languishes`, "and (3ms) being really weakened")
+
+run_test(`Transliteration: vᵊyiṯbārḵû
+From the root בָּרַךְ (H1288) - Hebrew: Conjunction; Verb hithpael imperfect third person masculine plural
+English: And let bless themselves`, "and (3mp) blessing themselves")
+
+run_test(`Transliteration: bᵊḥîrî
+From the root בָּחִיר (H972) - Hebrew: Adjective adjective masculine singular construct; Suffix pronominal first person common singular
+English: My chosen one`, "my chosen (ms)")
+
+run_test(`Transliteration: ûḵhiṯpallēl
+From the root פָּלַל (H6419) - Hebrew: Conjunction; Preposition; Verb hithpael infinitive construct
+English: Now while was praying`, "and as pray of")
+
+run_test(`Transliteration: bᵊṣurôṯ
+From the root בָּצַר (H1219) - Hebrew: Adjective adjective feminine plural absolute
+English: fortified`, "fortified (fp)")
+
+run_test(`Transliteration: ṯiḇṣōr
+From the root בָּצַר (H1219) - Hebrew: Verb qal imperfect second person masculine singular
+English: you shall gather`, "you (ms) gathering")
