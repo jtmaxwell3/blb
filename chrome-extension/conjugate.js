@@ -47,7 +47,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
     let word_position = -1;
     // There can only be one word form.
     // It is in the last position unless there is a suffix.
-    if (has_suffix) {
+    // Except lî has a strong's number for the suffix instead of the preposition.
+     if (has_suffix && strongs != "H589") {
         word_position = forms.length - 2;
     } else {
         word_position = forms.length - 1;

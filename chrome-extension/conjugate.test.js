@@ -222,3 +222,11 @@ English: fortified`, "fortified (fp)")
 run_test(`Transliteration: ṯiḇṣōr
 From the root בָּצַר (H1219) - Hebrew: Verb qal imperfect second person masculine singular
 English: you shall gather`, "you (ms) gathering")
+
+run_test(`Transliteration: ḡā'ô
+From the root גָּאָה (H1342) - Hebrew: Verb qal infinitive absolute
+English: highly`, "to triumph")
+
+run_test(`Transliteration: lî
+From the root אֲנִי (H589) - Hebrew: Preposition; Suffix pronominal first person common singular
+English: to Me`, "to me")
