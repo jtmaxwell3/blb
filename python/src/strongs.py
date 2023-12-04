@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 import re
@@ -10,15 +11,44 @@ lemmatizer = WordNetLemmatizer()
 
 
 def create_strongs_to_english():
+    datafilename = '../../../Hebrew_lexicon/_data/TBESH_lang.csv'
+    hebrew_translation = dict()
+    with open(datafilename, mode='r') as file:
+        csv_file = csv.reader(file)
+        for line in csv_file:
+            if line == ['strongNumber', 'etymDesc', 'heading', 'entrycontent']:
+                continue
+            strongs = 'H' + str(line[0])
+            translation = get_first_TBESH_translation(line[2])
+            hebrew_translation[strongs] = translation
+    write_strongs_to_english(hebrew_translation, 'strongs-to-english.js')
+
+
+def get_first_TBESH_translation(translation):
+    for char in ['|', '\\', '/', '(', '[']:
+        pos = translation.find(char)
+        if pos > 0:
+            translation = translation[0:pos]
+    translation = translation.strip()
+    if translation.startswith('to '):
+        translation = translation[3:]
+    if translation and translation[-1] in ['!', '?']:
+        translation = translation[0:-1]
+    return translation
+
+def old_create_strongs_to_english():
     """Create a dictionary from strong's numbers to english."""
     filename = '../../../strongs/hebrew/strongs-hebrew-dictionary.json'
     hebrew_translations = get_strongs_dict_translations(filename)
     # hebrew_translation = choose_least_shared_translations(hebrew_translations)
     hebrew_translation = choose_most_frequent_translations(hebrew_translations)
-    filename = 'strongs-to-english.js'
+    write_strongs_to_english(hebrew_translation, 'strongs-to-english.js')
+
+
+def write_strongs_to_english(translation, filename):
     file = open('strongs-to-english.js', 'w')
     # Format hebrew_translation so that each key-value pair is on a separate line.
-    ht_str = ",\n".join(": ".join(('"' + k + '"', '"' + str(v) + '"')) for k, v in hebrew_translation.items())
+    ht_str = ",\n".join(": ".join(('"' + k + '"', '"' + str(v) + '"')) for k, v in translation.items())
     file.write('var strongs_to_english = {\n' + ht_str + '\n};\n\n' +
                'if (typeof window === \'undefined\') {\n    module.exports = strongs_to_english;\n}')
     file.close()
