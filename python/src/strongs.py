@@ -24,6 +24,48 @@ def create_strongs_to_english():
     write_strongs_to_english(hebrew_translation, 'strongs-to-english.js')
 
 
+def normalize_TBESH_translation(translation):
+    # Remove 'to'.
+    if translation.startswith('to '):
+        translation = translation[3:]
+    # Remove punctuation.
+    if translation and translation[-1] in ['!', '?']:
+        translation = translation[0:-1]
+    # Remove bracketed material.
+    while True:
+        pos = translation.find('[')
+        if pos == -1:
+            break
+        pos2 = translation.find(']', pos + 1)
+        translation = translation[0:pos] + translation[pos2 + 1:]
+    # Remove extra space.
+    translation = translation.replace('  ', ' ')
+    # Add parenthesis around slashes.
+    pos = translation.find('/')
+    if pos > 0:
+        translation = add_parentheses(translation, pos)
+        translation = translation.replace('/', '|')
+        return translation
+    pos = translation.find('\\')
+    if pos > 0:
+        translation = add_parentheses(translation, pos)
+        translation = translation.replace('\\', '|')
+        return translation
+    pos = translation.find('|')
+    if pos > 0:
+        return '(' + translation + ')'
+    return translation
+
+
+def add_parentheses(translation, pos):
+    pos2 = pos
+    while pos > 0 and translation[pos - 1] != ' ':
+        pos += -1
+    while pos2 < len(translation) and translation[pos2] != ' ':
+        pos2 += 1
+    return translation[0:pos] + '(' + translation[pos:pos2] + ')' + translation[pos2:]
+
+
 def get_first_TBESH_translation(translation):
     for char in ['|', '\\', '/', '(', '[']:
         pos = translation.find(char)

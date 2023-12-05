@@ -112,7 +112,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             }
             conjugation = word;
             if (number || gender) {
-                conjugation += " (" + gender + number + ")"
+                conjugation += " [" + gender + number + "]"
             }
             conjugation += construct;
             conjugations.push(conjugation);
@@ -176,7 +176,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 conjugation = get_noun_inflection(word, "PL");
             }
             if (gender != "") {
-                conjugation += " (" + gender + ")"
+                conjugation += " [" + gender + "]"
             }
             if (conjugation == "faces" &&
                 conjugations.length == 1 && conjugations[0] == "to") {
@@ -298,7 +298,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 conjugation = word;
                 // Word should already be marked for number.
                 if (gender != "") {
-                    conjugation += " (" + gender + ")"
+                    conjugation += " [" + gender + "]"
                 }
             } else {
                 // A clitic.
@@ -484,7 +484,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             if (participle) {
                 conjugation = "that which " + verb;
                 if (gender) {
-                    conjugation += " (" + gender + ")";
+                    conjugation += " [" + gender + "]";
                 }
             } else if (jussive || imperative) {
                 if (gender || number) {
@@ -529,13 +529,16 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
         if (result == "") {
             result = word;
         }
-        result += " (" + unknown_str + ")";
+        result += " [" + unknown_str + "]";
     }
     return result;
 }
 
 function get_noun_inflection(word, form) {
     if (form == "PL") {
+        if (word == "cattle") {
+            return word;
+        }
         if (word == "heaven") {
             return "heavens";
         }
@@ -590,7 +593,7 @@ function get_object_pronoun(person, gender, number) {
             return "us";
         }
     } else if (person == "2") {
-        return "you (" + gender + number + ")";
+        return "you [" + gender + number + "]";
     } else if (person == "3") {
         if (number == "s") {
             if (gender == "f") {
@@ -601,7 +604,7 @@ function get_object_pronoun(person, gender, number) {
                 return "it";
             }
         } else {
-            return "them (" + gender + ")";
+            return "them [" + gender + "]";
         }
     }
     console.log("Unknown object pronoun: " + person + gender + number);
@@ -616,7 +619,7 @@ function get_possessive_pronoun(person, gender, number) {
             return "our";
         }
     } else if (person == "2") {
-        return "your (" + gender + number + ")";
+        return "your [" + gender + number + "]";
     } else if (person == "3") {
         if (number == "s") {
             if (gender == "f") {
@@ -627,7 +630,7 @@ function get_possessive_pronoun(person, gender, number) {
                 return "its";
             }
         } else {
-            return "their (" + gender + ")";
+            return "their [" + gender + "]";
         }
     }
     console.log("Unknown poss. pronoun: " + person + gender + number);
@@ -643,9 +646,9 @@ function get_reflexive_pronoun(person, gender, number) {
         }
     } else if (person == "2") {
         if (number == "s") {
-           return "yourself (" + gender + ")";
+           return "yourself [" + gender + "]";
         } else {
-            return "yourselves (" + gender + ")";
+            return "yourselves [" + gender + "]";
         }
     } else if (person == "3") {
         if (number == "s") {
@@ -673,13 +676,13 @@ function get_subject_pronoun(person, gender, number, implicit) {
             return "we";
         }
     } else if (person == "2") {
-        return "you (" + gender + number + ")";
+        return "you [" + gender + number + "]";
     } else if (person == "3") {
         if (implicit) {
-            return "(" + person + gender + number + ")";
+            return "[" + person + gender + number + "]";
         } else if (number == "p") {
             if (gender) {
-                return "they (" + gender + ")";
+                return "they [" + gender + "]";
             }
             return "they";
         } else if (gender == "m") {

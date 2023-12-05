@@ -1,7 +1,7 @@
 import unittest
 from nltk.stem import WordNetLemmatizer
 
-from strongs import lemmatize_text, combine_phrases, parse_kjv_def
+from strongs import lemmatize_text, combine_phrases, parse_kjv_def, normalize_TBESH_translation
 
 
 class Test(unittest.TestCase):
@@ -66,3 +66,18 @@ class Test(unittest.TestCase):
                  ["nine", "nineteen", "nineteenth", "ninth"])
         run_test(" Haakashtari (includ. the article).", ["Haakashtari"])
         # run_test("dwelling((-) place)", ["dwell", "dwelling place", "dwelling-place"])
+
+
+    def test_normalize_TBESH_translation(self):
+
+        def run_test(test, gold):
+            result = normalize_TBESH_translation(test)
+            self.assertEqual(gold, result)
+
+        run_test("a b|c", "(a b|c)")
+        run_test("a b/c", "a (b|c)")
+        run_test("a b\\c", "a (b|c)")
+        run_test("a b/c d", "a (b|c) d")
+        run_test("a b\\c d", "a (b|c) d")
+        run_test("b/c d", "(b|c) d")
+        run_test("b\\c d", "(b|c) d")
