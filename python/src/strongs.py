@@ -19,18 +19,32 @@ def create_strongs_to_english():
             if line == ['strongNumber', 'etymDesc', 'heading', 'entrycontent']:
                 continue
             strongs = 'H' + str(line[0])
-            translation = get_first_TBESH_translation(line[2])
+            translation = line[2]
+            translation = get_first_TBESH_translation(translation)
             hebrew_translation[strongs] = translation
     write_strongs_to_english(hebrew_translation, 'strongs-to-english.js')
 
 
 def normalize_TBESH_translation(translation):
-    # Remove 'to'.
+    if translation == "they|they(fem.)":
+        return "they"
+    if translation.startswith("they("):
+        return "they"
+    if translation == "you(m.s.)|you(f.s.)|you(f.s.)|you(m.p.)|you":
+        return "you"
+    if translation == "thumb/big toe":
+        return "(thumb|big toe)"
+    if translation == "to cut off/covet":
+        return "(cut off|covet)"
+    if translation == "ointment pot/seasoning":
+        return "(ointment pot|seasoning)"
+    # Remove infinitive marker 'to'.
     if translation.startswith('to '):
         translation = translation[3:]
+    translation = translation.replace('|to ', '|')
     # Remove punctuation.
-    if translation and translation[-1] in ['!', '?']:
-        translation = translation[0:-1]
+    translation = translation.replace('?', '')
+    translation = translation.replace('!', '')
     # Remove bracketed material.
     while True:
         pos = translation.find('[')
@@ -39,8 +53,12 @@ def normalize_TBESH_translation(translation):
         pos2 = translation.find(']', pos + 1)
         translation = translation[0:pos] + translation[pos2 + 1:]
     # Remove extra space.
+    translation = translation.strip()
     translation = translation.replace('  ', ' ')
     # Add parenthesis around slashes.
+    pos = translation.find('|')
+    if pos > 0:
+        translation = '(' + translation + ')'
     pos = translation.find('/')
     if pos > 0:
         translation = add_parentheses(translation, pos)
@@ -51,19 +69,20 @@ def normalize_TBESH_translation(translation):
         translation = add_parentheses(translation, pos)
         translation = translation.replace('\\', '|')
         return translation
-    pos = translation.find('|')
-    if pos > 0:
-        return '(' + translation + ')'
     return translation
 
 
 def add_parentheses(translation, pos):
     pos2 = pos
-    while pos > 0 and translation[pos - 1] != ' ':
+    while pos > 0 and translation[pos - 1] not in [' ', '|']:
         pos += -1
-    while pos2 < len(translation) and translation[pos2] != ' ':
+    while pos2 + 1 < len(translation) and translation[pos2 + 1] not in [' ', '|']:
         pos2 += 1
-    return translation[0:pos] + '(' + translation[pos:pos2] + ')' + translation[pos2:]
+    if translation[pos] == '(' or (pos > 0 and translation[pos - 1] == '|'):
+        if translation[pos2] == ')' or (pos2 + 1 < len(translation) and translation[pos2 + 1] == '|'):
+            # Already has parentheses or is embedded in a disjunct.
+            return translation
+    return translation[0:pos] + '(' + translation[pos:pos2 + 1] + ')' + translation[pos2 + 1:]
 
 
 def get_first_TBESH_translation(translation):

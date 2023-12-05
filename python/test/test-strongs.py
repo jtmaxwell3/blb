@@ -81,3 +81,8 @@ class Test(unittest.TestCase):
         run_test("a b\\c d", "a (b|c) d")
         run_test("b/c d", "(b|c) d")
         run_test("b\\c d", "(b|c) d")
+        run_test("be luxuriant|to empty", "(be luxuriant|empty)")
+        run_test("to draw (up/out)", "draw (up|out)")
+        run_test("Hodiah [fem]", "Hodiah")
+        run_test("to bore|to play flute|to profane/begin", "(bore|play flute|profane|begin)")
+        run_test('ointment pot/seasoning', '(ointment pot|seasoning)')
