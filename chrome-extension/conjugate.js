@@ -311,6 +311,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let person = "";
             let voice = "";
             let he = "";
+            let nun = "";
             // Process terms.
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
@@ -326,6 +327,10 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     // Skip.
                 } else if (term == "masculine") {
                     gender = "m";
+                } else if (term == "nun") {
+                    nun = true;
+                } else if (term == "paragogic") {
+                    // Skip.
                 } else if (term == "plural") {
                     number = "p";
                 } else if (term == "pronominal") {
@@ -349,6 +354,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 // 'He' is a suffix with special meaning.
                 conjugation = he;
                 conjugations.push(conjugation);
+            } else if (nun) {
+                // Paragogic nun.
             } else if (priorForm.startsWith("Noun") || priorForm.startsWith("Adjective")) {
                 conjugation = get_possessive_pronoun(person, gender, number);
                 // Put the conjugation before the noun.
@@ -544,6 +551,9 @@ function get_noun_inflection(word, form) {
         }
         if (word == "Lord") {
             return word;
+        }
+        if (word == "praise") {
+            return "praises";
         }
         if (word == "them") {
             return word;

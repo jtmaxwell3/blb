@@ -230,3 +230,11 @@ English: highly`, "to triumph")
 run_test(`Transliteration: lî
 From the root אֲנִי (H589) - Hebrew: Preposition; Suffix pronominal first person common singular
 English: to Me`, "to me")
+
+run_test(`Transliteration: tᵊhillōṯ
+From the root תְּהִלָּה (H8416) - Hebrew: Noun common feminine plural construct
+English: the praises`, "praises [f] of")
+
+run_test(`Transliteration: ya'ăriḵûn
+From the root אָרַךְ (H748) - Hebrew: Verb hiphil imperfect third person masculine plural; Suffix paragogic nun
+English: may be prolonged`, "[3mp] causing to be long")
