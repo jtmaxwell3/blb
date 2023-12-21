@@ -311,7 +311,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let person = "";
             let voice = "";
             let he = "";
-            let nun = "";
+            let paragogic = false;
             // Process terms.
             for (let j = 1; j < terms.length; j++) {
                 let term = terms[j];
@@ -330,7 +330,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 } else if (term == "nun") {
                     nun = true;
                 } else if (term == "paragogic") {
-                    // Skip.
+                    paragogic = true;
                 } else if (term == "plural") {
                     number = "p";
                 } else if (term == "pronominal") {
@@ -354,8 +354,11 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 // 'He' is a suffix with special meaning.
                 conjugation = he;
                 conjugations.push(conjugation);
-            } else if (nun) {
-                // Paragogic nun.
+            } else if (paragogic) {
+                // Paragogic he or nun.
+            } else if (priorForm.startsWith("Noun") && strongs == "H3605") {
+                conjugation = "of " + get_object_pronoun(person, gender, number);
+                conjugations.push(conjugation)
             } else if (priorForm.startsWith("Noun") || priorForm.startsWith("Adjective")) {
                 conjugation = get_possessive_pronoun(person, gender, number);
                 // Put the conjugation before the noun.
@@ -482,6 +485,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 verb = get_verb_inflection(verb, "PC");
             }
             if (reflexive && (person || gender || number)) {
+                if (person == "") {
+                    person = "3";
+                }
                 verb += " " + get_reflexive_pronoun(person, gender, number);
             }
             if (jussive) {
@@ -490,15 +496,20 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
             let conjugation;
             if (participle) {
                 conjugation = "that which " + verb;
-                if (gender) {
-                    conjugation += " [" + gender + "]";
+                if (gender || number) {
+                    conjugation += " [" + gender + number + "]";
                 }
             } else if (jussive || imperative) {
                 if (gender || number) {
                     conjugation = "(" + gender + number + ") " + verb;
                 }
             } else if (infinitive) {
-                conjugation = verb;
+                if (conjugations.length == 0) {
+                    conjugation = "to " + verb;
+                } else {
+                    // "to" is given explicitly as a preposition.
+                    conjugation = verb;
+                }
             } else {
                 conjugation = get_subject_pronoun(person, gender, number, true) + " " + verb;
             }

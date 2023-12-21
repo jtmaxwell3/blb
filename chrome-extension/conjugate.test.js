@@ -106,7 +106,7 @@ English: is upon me`, "upon me")
 
 run_test(`Transliteration: vᵊla'ăsûrîm
 From the root אָסַר (H631) - Hebrew: Conjunction; Preposition; Verb qal participle passive masculine plural absolute
-English: ↓`, "and to that which be bound [m]")
+English: ↓`, "and to that which be bound [mp]")
 
 run_test(`Transliteration: ʿănāvîm
 From the root עָנָו (H6035) - Hebrew: Adjective adjective masculine plural absolute
@@ -153,7 +153,7 @@ English: theirs`, "to them [m]")
 
 run_test(`Transliteration: 'ōhēḇ
 From the root אָהַב (H157) - Hebrew: Verb qal participle active masculine singular absolute
-English: love`, "that which love [m]")
+English: love`, "that which love [ms]")
 
 run_test(`Transliteration: kî
 From the root כִּי (H3588) - Hebrew: Conjunction
@@ -225,7 +225,7 @@ English: you shall gather`, "you [ms] gathering")
 
 run_test(`Transliteration: ḡā'ô
 From the root גָּאָה (H1342) - Hebrew: Verb qal infinitive absolute
-English: highly`, "to triumph")
+English: highly`, "to rise up")
 
 run_test(`Transliteration: lî
 From the root אֲנִי (H589) - Hebrew: Preposition; Suffix pronominal first person common singular
@@ -238,3 +238,15 @@ English: the praises`, "praises [f] of")
 run_test(`Transliteration: ya'ăriḵûn
 From the root אָרַךְ (H748) - Hebrew: Verb hiphil imperfect third person masculine plural; Suffix paragogic nun
 English: may be prolonged`, "[3mp] causing to be long")
+
+run_test(`Transliteration: ḥyשh
+From the root חִישׁ (H2439) - Hebrew: Verb qal imperative second person masculine singular; Suffix paragogic he
+English: hasten`, "(ms) make haste!")
+
+run_test(`Transliteration: kullānû
+From the root כֹּל (H3605) - Hebrew: Noun common masculine singular construct; Suffix pronominal first person common plural
+English: all of us`, "all [m] of us")
+
+run_test(`Transliteration: miṯʿôrēr
+From the root עוּר (H5782) - Hebrew: Verb hithpolel participle active masculine singular absolute
+English: Who arouses himself`, "that which rouse himself [ms]")
