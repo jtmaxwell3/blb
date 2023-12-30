@@ -250,3 +250,7 @@ English: all of us`, "all [m] of us")
 run_test(`Transliteration: miṯʿôrēr
 From the root עוּר (H5782) - Hebrew: Verb hithpolel participle active masculine singular absolute
 English: Who arouses himself`, "that which rouse himself [ms]")
+
+run_test(`Transliteration: lᵊhiṯyaḥēś
+From the root יָחַשׂ (H3187) - Hebrew: Preposition; Verb hithpael infinitive construct
+English: he is enrolled in the genealogy`, "to enroll of")
