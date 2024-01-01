@@ -32,12 +32,15 @@ const observer = new MutationObserver((mutations, observer) => {
                 if (rows.length > 0 && !rows[0].children[4]) {
                     continue;
                 }
-                // Check whether there is a row with Hebrew.
+                // Check whether there is a valid row.
                 var valid_row = false;
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
                     const parseDiv = row.children[4].children[0];
                     if (parseDiv.title.indexOf("Hebrew:") != -1) {
+                        valid_row = true;
+                    }
+                    if (parseDiv.title.indexOf("Aramaic:") != -1) {
                         valid_row = true;
                     }
                 }

@@ -12,13 +12,22 @@ function conjugate(description) {
         return ""
     }
     let pos1 = description.search("Transliteration:");
-    let pos2 = description.search("Hebrew:");
+    let pos2 = -1;
     let pos3 = description.search("English:");
+    let languages = ["Hebrew", "Greek", "Aramaic"];
+    let language = "";
+    for (let i = 0; i < 3; i++) {
+        language = languages[i];
+        pos2 = description.search(language + ":");
+        if (pos2 >= 0) {
+            break;
+        }
+    }
     if (pos3 == -1) {
         pos3 = description.length;
     }
     let section1 = description.substring(pos1 + 16, pos2).trim();
-    let section2 = description.substring(pos2 + 7, pos3).trim();
+    let section2 = description.substring(pos2 + language.length + 1, pos3).trim();
     let section3 = description.substring(pos3 + 8, description.length).trim();
     let words = section1.trim().split(/\s+/);
     let transliteration = words[0];
@@ -33,10 +42,10 @@ function conjugate(description) {
         }
     }
     let forms = section2.split(";")
-    return conjugate_Hebrew_as_English(transliteration, strongs, forms)
+    return conjugate_Hebrew_as_English(transliteration, strongs, forms, language)
 }
 
-function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
+function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) {
     let conjugations = [];
     let unknowns = [];
     let last_form = forms[forms.length - 1];
@@ -52,6 +61,13 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
         word_position = forms.length - 2;
     } else {
         word_position = forms.length - 1;
+    }
+    if (language == "Aramaic") {
+        for (let i = 0; i < forms.length; i++) {
+            if (forms[i].trim() == "Particle definite article") {
+                word_position = word_position - 1;
+            }
+        }
     }
     let word_terms = "";
     // Conjugate the forms.
@@ -146,6 +162,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     // Skip.
                 } else if (term == "common") {
                     // Skip.
+                } else if (term == "determined") {
+                    // Skip. (Aramaic)
                 } else if (term == "dual") {
                     number = "p";
                 } else if (term == "construct") {
@@ -199,6 +217,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     if (term == "definite") {
                         // Definite articles are attached.
                         conjugation = "the";
+                    } else if (term == "direct") {
+                        // Definite articles are attached.
+                        conjugation = "[dobj]";
                     } else if (term == "interrogative") {
                         // Definite articles are attached.
                         conjugation = "¿";
@@ -212,7 +233,12 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                 conjugation = "???";
                 unknowns = unknowns.concat(terms);
             }
-            conjugations.push(conjugation);
+            if (language == "Aramaic" && conjugation == "the") {
+                // Move the determiner to before the noun.
+                conjugations.splice(conjugations.length - 1, 0, conjugation);
+            } else {
+                conjugations.push(conjugation);
+            }
         } else if (terms[0] == "Preposition") {
             if (i == word_position) {
                 conjugation = word;
@@ -390,6 +416,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     // Skip.
                 } else if (term == "absolute") {
                     // Skip.
+                } else if (term == "aphel") {
+                    // Aramaic.
+                    causative = true;
                 } else if (term == "common") {
                     // Skip.
                 } else if (term == "construct") {
@@ -398,6 +427,9 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     gender = "f";
                 } else if (term == "first") {
                     person = "1";
+                } else if (term == "haphel") {
+                    // Aramaic.
+                    causative = true;
                 } else if (term == "hiphil") {
                     causative = true;
                 } else if (term == "hophal") {
@@ -409,6 +441,11 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     reflexive = true;
                 } else if (term == "hithpalel") {
                     reflexive = true;
+                } else if (term == "hithpeil") {
+                    // Aramaic
+                    causative = true;
+                    passive = true;
+                    reflexive = true;
                 } else if (term == "hithpolel") {
                     reflexive = true;
                 } else if (term == "imperative") {
@@ -417,30 +454,76 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     imperfect = true;
                 } else if (term == "infinitive") {
                     infinitive = true;
+                } else if (term == "ishtaphel") {
+                    // Aramaic
+                    reflexive = true;
+                } else if (term == "ithpael") {
+                    // Aramaic
+                    causative = true;
+                    intensive = true;
+                } else if (term == "ithpeal") {
+                    // Aramaic
+                    intensive = true;
+                    reflexive = true;
+                } else if (term == "ithpeel") {
+                    // Aramaic
+                    intensive = true;
+                    reflexive = true;
+                } else if (term == "ithpeil") {
+                    // Aramaic
+                    intensive = true;
+                    passive = true;
+                    reflexive = true;
+                } else if (term == "ithpolel") {
+                    // Aramaic
+                    reflexive = true;
                 } else if (term == "jussive") {
                     jussive = true;
                 } else if (term == "masculine") {
                     gender = "m";
                 } else if (term == "niphal") {
                     passive = true;
+                } else if (term == "palpal") {
+                    // Skip.
                 } else if (term == "participle") {
                     participle = true;
                 } else if (term == "passive") {
                     passive = true;
+                } else if (term == "pael") {
+                    // Aramaic
+                    intensive = true;
+                } else if (term == "peal") {
+                    // Aramaic
+                    // Skip.
+                } else if (term == "peel") {
+                    // Aramaic
+                    intensive = true;
+                    passive = true;
+                } else if (term == "peil") {
+                    // Aramaic
+                    passive = true;
                 } else if (term == "piel") {
                     intensive = true;
                 } else if (term == "pilel") {
+                    intensive = true;
+                } else if (term == "pilpel") {
                     intensive = true;
                 } else if (term == "pulal") {
                     intensive = true;
                     passive = true;
                 } else if (term == "plural") {
                     number = "p";
-                } else if (term == "polel") {
+                } else if (term == "poal") {
                     intensive = true;
+                    passive = true;
+                } else if (term == "poel") {
+                    intensive = true;
+                    passive = true;
                 } else if (term == "polal") {
                     intensive = true;
                     passive = true;
+                } else if (term == "polel") {
+                    intensive = true;
                 } else if (term == "polpal") {
                     intensive = true;
                     passive = true;
@@ -453,12 +536,18 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms) {
                     // Skip.
                 } else if (term == "person") {
                     // Skip.
+                } else if (term == "saphel") {
+                    // Aramaic
+                    causative = true;
                 } else if (term == "second") {
                     person = "2";
                 } else if (term == "sequential") {
                     sequential = true;
                 } else if (term == "singular") {
                     number = "s";
+                } else if (term == "shaphel") {
+                    // Aramaic
+                    causative = true;
                 } else if (term == "third") {
                     person = "3";
                 } else {

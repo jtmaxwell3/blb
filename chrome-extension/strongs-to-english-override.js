@@ -152,6 +152,7 @@ var strongs_to_english_override = {
     "H3733": "lamb", // more common than "saddle"
     "H3802": "side", // more general than "shoulder"
     "H3835": "be white", // better for Qal than "whiten"
+    "H4026": "Migdol", // more common than "tower"
     "H7225": "beginning", // more common that "first"
     "H7363": [["hover", ["Verb", "piel"], ["Verb", "qal"]], "relax"],
     "H7462": "pasture", // more accurate than "of Shepherds"

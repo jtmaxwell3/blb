@@ -157,7 +157,7 @@ English: love`, "that which love [ms]")
 
 run_test(`Transliteration: kî
 From the root כִּי (H3588) - Hebrew: Conjunction
-English: that`, "for")
+English: that`, "that")
 
 run_test(`Transliteration: mēʿal
 From the root עַל (H5921) - Hebrew: Preposition; Preposition
@@ -254,3 +254,15 @@ English: Who arouses himself`, "that which rouse himself [ms]")
 run_test(`Transliteration: lᵊhiṯyaḥēś
 From the root יָחַשׂ (H3187) - Hebrew: Preposition; Verb hithpael infinitive construct
 English: he is enrolled in the genealogy`, "to enroll of")
+
+run_test(`Transliteration: malkā'
+From the root מֶלֶךְ (H4430) - Aramaic: Noun common masculine singular determined; Particle definite article
+English: The king`, "the king [m]")
+
+run_test(`Transliteration: ûp̄išrā'
+From the root פְּשַׁר (H6591) - Aramaic: Conjunction; Noun common masculine singular determined; Particle definite article
+English: and the interpretation`, "and the interpretation [m]")
+
+run_test(`Transliteration: lᵊḵōl
+From the root כֹּל (H3606) - Aramaic: Particle direct object marker; Noun common masculine singular construct
+English: all`, "[dobj] all [m] of")
