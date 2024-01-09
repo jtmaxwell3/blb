@@ -2,12 +2,68 @@ import csv
 import json
 import os
 import re
+import string
 
 import nltk
 from nltk.stem import WordNetLemmatizer
 
 nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
+
+def create_OT_etymology_dict():
+    datafilename = '../../../Hebrew_lexicon/_data/TBESH_lang.csv'
+    etymology_dict = dict()
+    largest_group = list()
+    with open(datafilename, mode='r') as file:
+        csv_file = csv.reader(file)
+        for line in csv_file:
+            if line == ['strongNumber', 'etymDesc', 'heading', 'entrycontent']:
+                continue
+            strongs = 'H' + str(line[0])
+            # See if the etymology has one root.
+            etymology = line[1]
+            if etymology.find('an unused root') >= 0:
+                continue
+            if etymology.find('a foreign word') >= 0:
+                continue
+            if etymology == 'probably from H2580 and l908':
+                continue
+            if etymology.find(' unused ') >= 0 and etymology.find(' and ') >= 0:
+                continue
+            group = list()
+            for word in etymology.split():
+                if word[-1] in string.punctuation:
+                    word = word[:-1]
+                if word[0] == 'H' and word[1:].isnumeric():
+                    group.append(word)
+            if len(group) != 1:
+                continue
+            print(strongs, etymology)
+            # Group all equivalent roots.
+            group.append(strongs)
+            for element in group:
+                if element in etymology_dict:
+                    for element2 in etymology_dict[element]:
+                        if element2 not in group:
+                            group.append(element2)
+            group.sort()
+            if len(group) > len(largest_group):
+                largest_group = group
+            # Give all equivalent roots the same group.
+            for element in group:
+                etymology_dict[element] = group
+    print('largest group', len(largest_group), largest_group)
+    write_dictionary(etymology_dict, 'OT-etymology.js', 'OT_etymology')
+
+
+def write_dictionary(dictionary, filename, var_name):
+    file = open(filename, 'w')
+    # Format hebrew_translation so that each key-value pair is on a separate line.
+    ht_str = ",\n".join(": ".join(('"' + k + '"', str(v))) for k, v in dictionary.items())
+    file.write('var ' + var_name + ' = {\n' + ht_str + '\n};\n\n' +
+               'if (typeof window === \'undefined\') {\n    module.exports = ' + var_name + ';\n}')
+    file.close()
+    print('wrote', filename)
 
 
 def create_strongs_to_english():
@@ -571,4 +627,5 @@ def combine_morphemes(stem, suffix):
 
 if __name__ == '__main__':
     # create_strongs_to_phrases()
-    create_strongs_to_english()
+    # create_strongs_to_english()
+    create_OT_etymology_dict()
