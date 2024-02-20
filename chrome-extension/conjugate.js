@@ -197,8 +197,8 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) 
                 conjugation += " [" + gender + "]"
             }
             if (conjugation == "faces" &&
-                conjugations.length == 1 && conjugations[0] == "to") {
-                // "to faces" is translated as the preposition "before"
+                conjugations.length == 1 && (conjugations[0] == "to" || conjugations[0] == "from")) {
+                // "to faces" and "from faces" are translated as the preposition "before"
                 // This is common enough to write special code for it.
                 conjugations = ["before"];
                 forms[i] = "Preposition";
@@ -590,7 +590,7 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) 
                 }
             } else if (jussive || imperative) {
                 if (gender || number) {
-                    conjugation = "(" + gender + number + ") " + verb;
+                    conjugation = "[" + gender + number + "] " + verb;
                 }
             } else if (infinitive) {
                 if (conjugations.length == 0) {

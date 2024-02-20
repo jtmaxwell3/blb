@@ -266,3 +266,7 @@ English: and the interpretation`, "and the interpretation [m]")
 run_test(`Transliteration: lᵊḵōl
 From the root כֹּל (H3606) - Aramaic: Particle direct object marker; Noun common masculine singular construct
 English: all`, "[dobj] all [m] of")
+
+run_test(`Transliteration: mipnêhem
+From the root פָּנִים (H6440) - Hebrew: Preposition; Noun common both plural construct; Suffix pronominal third person masculine plural
+English: before them`, "before them [m]")
