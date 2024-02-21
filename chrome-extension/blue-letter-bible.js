@@ -1,9 +1,70 @@
-console.log('blue-letter-bible.js loaded!');
 // Move the page continuation before the examples.
 var pageCont = document.getElementById('pageCont');
 var lexResults = document.getElementById('lexResults');
-var bibleTable = document. getElementById('bibleTable');
+var bibleTable = document.getElementById('bibleTable');
 var header = null;
+if (bibleTable) {
+    var strongs = new Map();
+    count_strongs(bibleTable, strongs);
+    highlight_repeated_strongs(bibleTable, strongs);
+}
+function count_strongs(element, strongs) {
+    var id = get_strongs(element);
+    if (id) {
+        if (!(id in strongs)) {
+            strongs[id] = 0;
+        }
+        strongs[id] = strongs[id] + 1;
+    }
+    if (element.children) {
+        for (let i = 0; i < element.children.length; i++) {
+            count_strongs(element.children[i], strongs);
+        }
+    }
+}
+function highlight_repeated_strongs(element, strongs) {
+    if (element.childNodes) {
+       var new_elements = [];
+       for (let i = 0; i < element.childNodes.length; i++) {
+            var id = get_strongs(element.childNodes[i]);
+            if (id && strongs[id] > 1) {
+                var textNode = element.childNodes[i - 1];
+                var content = textNode.nodeValue;
+                if (!content) continue;
+                var space1 = content.lastIndexOf(' ');
+                var bold = document.createElement('strong');
+                if (space1 < 1) {
+                    // Make the content bold.
+                    bold.appendChild(document.createTextNode(content));
+                    element.replaceChild(bold, textNode);
+                } else {
+                    // Make the last word bold.
+                    var bold_content = content.substring(space1, content.length);
+                    bold.appendChild(document.createTextNode(bold_content));
+                    textNode.nodeValue = content.substring(0, space1);
+                    // Don't add new elements during iteration.
+                    new_elements.push([textNode, bold])
+                }
+            }
+        }
+        for (let i = 0; i < new_elements.length; i++) {
+            var textNode = new_elements[i][0];
+            var bold = new_elements[i][1];
+            textNode.after(bold);
+        }
+    }
+    if (element.children) {
+        for (let i = 0; i < element.children.length; i++) {
+            highlight_repeated_strongs(element.children[i], strongs);
+        }
+    }
+}
+function get_strongs(element) {
+    if (element.classList && element.classList.contains("strongs")) {
+        return element.children[0].childNodes[0].data;
+    }
+}
+
 if (pageCont && lexResults && bibleTable) {
   pageCont.remove();
   lexResults.insertBefore(pageCont, bibleTable);
@@ -78,3 +139,4 @@ observer.observe(document, {
   subtree: true,
   childList: true
 });
+console.log('blue-letter-bible.js loaded!');

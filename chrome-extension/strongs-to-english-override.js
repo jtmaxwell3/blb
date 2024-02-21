@@ -313,6 +313,12 @@ var strongs_to_english_override = {
     "H8032": "previously", // more common than "three days ago"
     "H8077": "desolation", // better than "devastation, desolation"
     "H8088": "report", // more common than "sound"
+    "H8135": "hatred", // better part of speech than "hating"
+    "H8163": [["hairy", ["Adjective"]], "goat"],
+    "H8173": "delight", // more common than "smear"
+    "H8192": "bare", // better for passive than "be bare"
+    "H8197": "Shephupham", // better than "Shephupham, Shephuphan"
+    "H8186": "horrible thing", // better part of speech than "horror",
     "H8266": "deal falsely", // more accurate than "deal"
 }
 
