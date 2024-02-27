@@ -3,36 +3,60 @@ var pageCont = document.getElementById('pageCont');
 var lexResults = document.getElementById('lexResults');
 var bibleTable = document.getElementById('bibleTable');
 var header = null;
-if (bibleTable) {
+if (bibleTable && !lexResults) {
     var strongs = new Map();
     count_strongs(bibleTable, strongs);
     highlight_repeated_strongs(bibleTable, strongs);
 }
 function count_strongs(element, strongs) {
-    var id = get_strongs(element);
-    if (id) {
-        if (!(id in strongs)) {
-            strongs[id] = 0;
-        }
-        strongs[id] = strongs[id] + 1;
-    }
+    var prior_id = null;
     if (element.children) {
         for (let i = 0; i < element.children.length; i++) {
+            var id = get_strongs(element.children[i]);
+            if (id && id != prior_id) {
+                // Don't count doublets.
+                if (!(id in strongs)) {
+                    strongs[id] = 0;
+                }
+                strongs[id] = strongs[id] + 1;
+            }
+            if (id) {
+                prior_id = id;
+            }
             count_strongs(element.children[i], strongs);
         }
     }
 }
 function highlight_repeated_strongs(element, strongs) {
+    var punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
     if (element.childNodes) {
        var new_elements = [];
-       for (let i = 0; i < element.childNodes.length; i++) {
+       for (let i = 1; i < element.childNodes.length; i++) {
             var id = get_strongs(element.childNodes[i]);
+            var index = i - 1;
             if (id && strongs[id] > 1) {
-                var textNode = element.childNodes[i - 1];
+                var textNode = element.childNodes[index];
                 var content = textNode.nodeValue;
+                if (content && punctuation.indexOf(content) >= 0 && index > 0) {
+                    // A yhwh node can be followed by punctuation.
+                    // Skip over the punctuation.
+                    index = index - 1;
+                    textNode = element.childNodes[index];
+                    content = textNode.nodeValue;
+                }
+                if (textNode.classList && textNode.classList.contains("yhwh")) {
+                    // Make the yhwh node bold.
+                    var bold = document.createElement('strong');
+                    element.replaceChild(bold, textNode);
+                    bold.appendChild(textNode);
+                    // Skip over the yhwh node.
+                    index = index - 1;
+                    textNode = element.childNodes[index];
+                    content = textNode.nodeValue;
+                }
                 if (!content) continue;
-                var space1 = content.lastIndexOf(' ');
                 var bold = document.createElement('strong');
+                var space1 = content.lastIndexOf(' ');
                 if (space1 < 1) {
                     // Make the content bold.
                     bold.appendChild(document.createTextNode(content));

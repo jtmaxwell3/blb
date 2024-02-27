@@ -316,10 +316,28 @@ var strongs_to_english_override = {
     "H8135": "hatred", // better part of speech than "hating"
     "H8163": [["hairy", ["Adjective"]], "goat"],
     "H8173": "delight", // more common than "smear"
+    "H8186": "horrible thing", // better part of speech than "horror",
     "H8192": "bare", // better for passive than "be bare"
     "H8197": "Shephupham", // better than "Shephupham, Shephuphan"
-    "H8186": "horrible thing", // better part of speech than "horror",
+    "H8205": "bare height", // more common than "bareness"
+    "H8227": "Shaphan", // more common than "rock badger"
+    "H8240": "hook", // more common than "ash heep"
+    "H8252": "be quiet", // better for Qal than "quiet"
+    "H8259": "look down", // more common than "look"
+    "H8302": "breastplate", // more common than "lance"
+    "H8336": "fine linen", // more common than "alabaster"
+    "H8362": "plant", // more common than "transplant"
+    "H8438": "scarlet", // more common than "worm"
     "H8266": "deal falsely", // more accurate than "deal"
+    "H8447": "turn", // more common than "plait"
+    "H8451": "law", // more common than "instruction"
+    "H8539": "be astounded", // better for Qal than "astounded"
+    "H8543": "previously", // more common than "yesterday"
+    "H8577": "sea serpent", // more common than "jackal"
+    "H8594": "hostage", // more common than "security"
+    "H8602": [["whitewash", ["Noun"]], "insipid"],
+    "H8615": "hope", // more common than "cord"
+    "H8655": "household idols", // more common than "Teraphim"
 }
 
 if (typeof window === 'undefined') {
