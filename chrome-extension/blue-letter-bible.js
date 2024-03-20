@@ -10,20 +10,26 @@ if (bibleTable && !lexResults) {
 }
 function count_strongs(element, strongs) {
     var prior_id = null;
-    if (element.children) {
-        for (let i = 0; i < element.children.length; i++) {
-            var id = get_strongs(element.children[i]);
-            if (id && id != prior_id) {
-                // Don't count doublets.
-                if (!(id in strongs)) {
-                    strongs[id] = 0;
-                }
-                strongs[id] = strongs[id] + 1;
-            }
+    if (element.childNodes) {
+        for (let i = 0; i < element.childNodes.length; i++) {
+            var id = get_strongs(element.childNodes[i]);
             if (id) {
+                var textNode = element.childNodes[i - 1];
+                var content = textNode.nodeValue;
+                var has_space = false;
+                if (content && content.indexOf(' ') >= 0) {
+                    has_space = true;
+                }
+                if (!(id == prior_id && !has_space)) {
+                    // Don't count the second term in a doublet.
+                    if (!(id in strongs)) {
+                        strongs[id] = 0;
+                    }
+                    strongs[id] = strongs[id] + 1;
+                }
                 prior_id = id;
             }
-            count_strongs(element.children[i], strongs);
+            count_strongs(element.childNodes[i], strongs);
         }
     }
 }
