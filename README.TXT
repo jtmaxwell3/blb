@@ -3,6 +3,7 @@ The Chrome extension adds a literal, word-for-word translation of Hebrew with in
 
 The Python code uses the following:
 https://github.com/ibc-oarc/Hebrew_lexicon.git
+https://github.com/morphgnt/morphological-lexicon.git (for Greek)
 
 This needs to have ../interlinear_bible and ../strongs installed if you want to generate strongs-to-english.js using the Python code.
 ../interlinear_bible is from https://github.com/tahmmee/interlinear_bibledata/blob/master/interlinear/bible.tar.gz.

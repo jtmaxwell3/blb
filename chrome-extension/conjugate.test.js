@@ -9,6 +9,31 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: ēn
+From the root εἰμί (G1510)
+Verb - Imperfect Active Indicative - 3rd Person Singular
+English: was`, "was")
+
+run_test(`Transliteration: exetrapēsan
+From the root ἐκτρέπω (G1624)
+Verb - Aorist Passive Indicative - 3rd Person Plural
+English: have turned aside`, "[3s] have turned asides")
+
+run_test(`Transliteration: eidōs
+From the root εἴδω (G1492)
+Verb - Perfect Active Participle - Nominative Singular Masculine
+English: realizing`, "[3s] knowing [m]")
+
+run_test(`Transliteration: biblos
+From the root βίβλος (G976)
+Noun - Nominative Singular Feminine
+English: The record`, "book [f]")
+
+run_test(`Transliteration: hēmōn
+From the root ἐγώ (G1473)
+Personal / Possessive Pronoun - Genitive Plural
+English: our`, "our");
+
 run_test(`Transliteration: haššāmayim
 From the root שָׁמַיִם (H8064) - Hebrew: Particle definite article; Noun common masculine plural absolute
 English: the heavens`, "the heavens [m]")
@@ -241,7 +266,7 @@ English: may be prolonged`, "[3mp] causing to be long")
 
 run_test(`Transliteration: ḥyשh
 From the root חִישׁ (H2439) - Hebrew: Verb qal imperative second person masculine singular; Suffix paragogic he
-English: hasten`, "(ms) make haste!")
+English: hasten`, "[ms] make haste!")
 
 run_test(`Transliteration: kullānû
 From the root כֹּל (H3605) - Hebrew: Noun common masculine singular construct; Suffix pronominal first person common plural
@@ -270,3 +295,4 @@ English: all`, "[dobj] all [m] of")
 run_test(`Transliteration: mipnêhem
 From the root פָּנִים (H6440) - Hebrew: Preposition; Noun common both plural construct; Suffix pronominal third person masculine plural
 English: before them`, "before them [m]")
+

@@ -3,12 +3,14 @@ import json
 import os
 import re
 import string
+import yaml
 
 import nltk
 from nltk.stem import WordNetLemmatizer
 
 nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
+
 
 def create_OT_etymology_dict():
     datafilename = '../../../Hebrew_lexicon/_data/TBESH_lang.csv'
@@ -67,8 +69,9 @@ def write_dictionary(dictionary, filename, var_name):
 
 
 def create_strongs_to_english():
+    translation_dict = dict()
+    read_morphological_lexicon(translation_dict)
     datafilename = '../../../Hebrew_lexicon/_data/TBESH_lang.csv'
-    hebrew_translation = dict()
     with open(datafilename, mode='r') as file:
         csv_file = csv.reader(file)
         for line in csv_file:
@@ -77,8 +80,116 @@ def create_strongs_to_english():
             strongs = 'H' + str(line[0])
             translation = line[2]
             translation = get_first_TBESH_translation(translation)
-            hebrew_translation[strongs] = translation
-    write_strongs_to_english(hebrew_translation, 'strongs-to-english.js')
+            translation_dict[strongs] = translation
+    write_strongs_to_english(translation_dict, 'strongs-to-english.js')
+
+
+def read_morphological_lexicon(translation_dict):
+    morphological_lexicon = '../../../morphological-lexicon/lexemes.yaml'
+    with open(morphological_lexicon, mode='r') as file:
+        dictionary = yaml.safe_load(file)
+        for word in dictionary:
+            entry = dictionary[word]
+            if 'strongs' not in entry:
+                print("missing strongs in " + word + ": " + str(entry))
+                continue
+            if 'gloss' not in entry:
+                print("missing gloss in " + word + ": " + str(entry))
+                continue
+            strongs = 'G' + str(entry['strongs'])
+            translation = entry['gloss']
+            translation = get_short_morphological_translation(translation)
+            translation_dict[strongs] = translation
+
+
+def get_short_morphological_translation(translations):
+    if not isinstance(translations, list):
+        translations = translations.split(',')
+    best = ""
+    for translation in translations:
+        translation = trim_morphological_translation(translation)
+        if best == "" or translation.count(" ") < best.count(" "):
+            best = translation
+    return best
+
+
+def get_first_morphological_translation(translation):
+    if isinstance(translation, list):
+        translation = translation[0]
+    for char in [',', ';']:
+        pos = translation.find(char)
+        if pos > 0:
+            translation = translation[0:pos]
+    return trim_morphological_translation(translation)
+
+
+def trim_morphological_translation(translation):
+    translation = translation.strip()
+    if translation.startswith("a "):
+        return translation[2:]
+    if translation.startswith("an "):
+        return translation[3:]
+    if translation.startswith("the "):
+        return translation[4:]
+    if translation.startswith("to "):
+        return translation[3:]
+    if translation.startswith("I am "):
+        return "be " + translation[5:]
+    if translation == "I am":
+        return "be"
+    if translation.startswith("I "):
+        return translation[2:]
+    return translation
+
+
+def read_strongs_greek_dictionary(translation_dict):
+    strongs_greek_dictionary = '../../../strongs/greek/strongs-greek-dictionary.json'
+    with open(strongs_greek_dictionary, mode='r') as file:
+        dictionary = json.load(file)
+        for strongs in dictionary:
+            if 'kjv_def' in dictionary[strongs]:
+                translation = dictionary[strongs]['kjv_def']
+            else:
+                translation = dictionary[strongs]['strongs_def']
+            translation = get_first_strongs_translation(translation, dictionary[strongs])
+            translation_dict[strongs] = translation
+
+
+def get_first_strongs_translation(translation, entry):
+    original = translation
+    # remove parentheses first
+    stripped = False
+    while translation.find('(') > -1:
+        start = translation.find('(')
+        end = translation.find(')', start)
+        length = len(translation)
+        if end == -1:
+            end = length
+        if length == end + 1:
+            end = length
+        translation = translation[0:start] + translation[end + 1: length]
+        stripped = True
+    # Get first entry
+    for char in [',', ';']:
+        pos = translation.find(char)
+        if pos > 0:
+            translation = translation[0:pos]
+    # Clean up
+    translation = translation.replace('X', '')
+    translation = translation.replace('+', '')
+    translation = translation.replace(')', '')
+    translation = translation.replace('"', '')
+    translation = translation.replace('-', ' ')
+    translation = translation.replace('  ', ' ')
+    translation = translation.strip()
+    if translation.startswith('to '):
+        translation = translation[3:]
+    if translation and translation[-1] in ['!', '?']:
+        translation = translation[0:-1]
+    if stripped:
+        print(translation)
+        # print(original + " => " + '"' + translation + '"' + '    ' + str(entry))
+    return translation
 
 
 def normalize_TBESH_translation(translation):
@@ -152,6 +263,7 @@ def get_first_TBESH_translation(translation):
     if translation and translation[-1] in ['!', '?']:
         translation = translation[0:-1]
     return translation
+
 
 def old_create_strongs_to_english():
     """Create a dictionary from strong's numbers to english."""
@@ -490,6 +602,7 @@ def find_comma(text):
             return i
     return -1
 
+
 def expand_parentheses(text):
     """Expand parentheses as alternatives."""
     open_paren = text.find('(')
@@ -557,7 +670,7 @@ def combine_phrases(phrase1, phrase2):
         result = 'truth'
     elif phrase1[-1] == 'e' and len(phrase1) > 1 and phrase1[-2] != 'e' and phrase2 == 'y':
         result = phrase1[0:-1] + phrase2
-    elif phrase1[-1] == 'e' and len(phrase1) > 1 and phrase1[-2] != 'e'  and phrase2[0] == 'i':
+    elif phrase1[-1] == 'e' and len(phrase1) > 1 and phrase1[-2] != 'e' and phrase2[0] == 'i':
         result = phrase1[:-1] + phrase2
     elif phrase1[-1] == 'y' and phrase2[0] == 'i':
         result = phrase1[:-1] + phrase2
@@ -627,5 +740,5 @@ def combine_morphemes(stem, suffix):
 
 if __name__ == '__main__':
     # create_strongs_to_phrases()
-    # create_strongs_to_english()
-    create_OT_etymology_dict()
+    create_strongs_to_english()
+    # create_OT_etymology_dict()

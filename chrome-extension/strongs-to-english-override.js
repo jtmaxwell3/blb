@@ -1,4 +1,7 @@
 var strongs_to_english_override = {
+    "G2003": "command", // better than "instruction"
+    "G2596": "according to", // better than "down from"
+    "G5547": "Christ", // better than "anointed"
     "H101": "bowl", // better translation than "vessel"
     "H119": "be red", // better for Qal than "redden"
     "H155": "mantle", // more common than "clothing"

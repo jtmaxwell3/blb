@@ -14,14 +14,11 @@ function count_strongs(element, strongs) {
         for (let i = 0; i < element.childNodes.length; i++) {
             var id = get_strongs(element.childNodes[i]);
             if (id) {
-                var textNode = element.childNodes[i - 1];
-                var content = textNode.nodeValue;
-                var has_space = false;
-                if (content && content.indexOf(' ') >= 0) {
-                    has_space = true;
-                }
-                if (!(id == prior_id && !has_space)) {
+                if (id != prior_id) {
                     // Don't count the second term in a doublet.
+                    // This will also ignore the second term in
+                    // phrases like "day by day", but those are
+                    // easy for the user to see.
                     if (!(id in strongs)) {
                         strongs[id] = 0;
                     }
@@ -117,8 +114,8 @@ const observer = new MutationObserver((mutations, observer) => {
         if (mutation.target.id == "interruptDiv"  || mutation.target.id == "bodTag") {
             // interruptDiv is for search results, bodTag is for Strong's entries
             const header_rows = mutation.target.getElementsByClassName("header-row");
-            if (header_rows.length == 1) {
-                const header_row = header_rows[0]
+            if (header_rows.length == 2) {
+                const header_row = header_rows[1]
                 const rows = mutation.target.getElementsByClassName("row");
                 if (rows.length > 0 && !rows[0].children[4]) {
                     continue;
@@ -128,10 +125,7 @@ const observer = new MutationObserver((mutations, observer) => {
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
                     const parseDiv = row.children[4].children[0];
-                    if (parseDiv.title.indexOf("Hebrew:") != -1) {
-                        valid_row = true;
-                    }
-                    if (parseDiv.title.indexOf("Aramaic:") != -1) {
+                    if (parseDiv.title.indexOf("Transliteration:") != -1) {
                         valid_row = true;
                     }
                 }

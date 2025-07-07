@@ -7,6 +7,8 @@ if (typeof window === 'undefined') {
     get_conjugation = require('./get_conjugation.js')
 }
 
+var prior_terms = [];
+
 function conjugate(description) {
     if  (!description) {
         return ""
@@ -14,7 +16,7 @@ function conjugate(description) {
     let pos1 = description.search("Transliteration:");
     let pos2 = -1;
     let pos3 = description.search("English:");
-    let languages = ["Hebrew", "Greek", "Aramaic"];
+    let languages = ["Hebrew", "Aramaic", "Greek"];
     let language = "";
     for (let i = 0; i < 3; i++) {
         language = languages[i];
@@ -22,6 +24,10 @@ function conjugate(description) {
         if (pos2 >= 0) {
             break;
         }
+    }
+    if (pos2 == -1) {
+        language = "";
+        pos2 = description.indexOf(")") + 1;
     }
     if (pos3 == -1) {
         pos3 = description.length;
@@ -42,7 +48,102 @@ function conjugate(description) {
         }
     }
     let forms = section2.split(";")
-    return conjugate_Hebrew_as_English(transliteration, strongs, forms, language)
+    if (language == "Greek" || language == "") {
+        console.log(description)
+        conjugation = conjugate_Greek_as_English(transliteration, strongs, forms);
+        console.log("=> " + conjugation);
+        return conjugation;
+    }
+    return conjugate_Hebrew_as_English(transliteration, strongs, forms, language);
+}
+
+function conjugate_Greek_as_English(transliteration, strongs, forms) {
+    const form = forms[0];
+    // Split the form into terms.
+    var terms = form.trim().split(/\s+/);
+    let word = ""
+    result = get_English_for_Strongs(strongs, terms);
+    word = result[0];
+    terms = result[1];
+    let gcase = "";
+    let gender = "";
+    let number = "";
+    let person = 3;
+    for (let j = 1; j < terms.length; j++) {
+        let term = terms[j];
+        if (term == "Accusative") {
+            gcase = "a";
+        } else if (term == "Dative") {
+            gcase = "d";
+        } else if (term == "Feminine") {
+            gender = "f";
+        } else if (term == "Genitive") {
+            gcase = "g";
+        } else if (term == "Masculine") {
+            gender = "m";
+        } else if (term == "Neuter") {
+            gender = "n";
+        } else if (term == "Nominative") {
+            gcase = "n";
+        } else if (term == "Plural") {
+            number = "p";
+        } else if (term == "Singular") {
+            number = "s";
+        } else if (term == "1st") {
+            person = 1;
+        } else if (term == "2nd") {
+            person = 2;
+        }
+    }
+    conjugation = word;
+    if (terms.includes("Possessive") && terms.includes("Pronoun")) {
+        if (word == "I") {
+            person = 1;
+        }
+        if (word == "you") {
+            person = 2;
+        }
+        return get_possessive_pronoun(person, gender, number);
+    }
+    if (terms.includes("Passive")) {
+        conjugation = "be " + get_verb_inflection(conjugation, "PP", terms);
+    }
+    if (terms.includes("Participle")) {
+        conjugation = get_verb_inflection(conjugation, "PC", terms);
+    }
+    if (terms.includes("Aorist") || terms.includes("Imperfect")) {
+        conjugation = get_verb_inflection(conjugation, "PA", terms);
+    }
+    if (terms.includes("Verb") &&
+        terms.includes("Present") &&
+        !terms.includes("Participle")) {
+        if (person == 3 && number == "s") {
+            conjugation = get_verb_inflection(conjugation, "TS", terms);
+        }
+    }
+    // if (terms.includes("Verb")) {
+    //     conjugation = "[" + person + number + "] " + conjugation;
+    // }
+    if (number == "p") {
+        conjugation = get_noun_inflection(conjugation, "PL");
+    }
+    if (gcase == "g" &&
+        !(prior_terms.includes("Genitive")) &&
+        !(prior_terms.includes("Conjunction")) &&
+        !(prior_terms.includes("Preposition"))) {
+        conjugation = "(of) " + conjugation;
+    }
+    if (gcase == "d" &&
+        !(prior_terms.includes("Dative")) &&
+        !(prior_terms.includes("Conjunction")) &&
+        !(prior_terms.includes("Preposition"))) {
+        conjugation = "(to) " + conjugation;
+    }
+    if (gender != "") {
+        conjugation += " [" + gender + "]";
+    }
+    prior_terms = terms;
+    return conjugation;
 }
 
 function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) {
@@ -568,10 +669,10 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) 
             }
             // Get participial form.
             if (passive) {
-                verb = "be " + get_verb_inflection(verb, "PP")
+                verb = "be " + get_verb_inflection(verb, "PP", [])
             }
             if (imperfect) {
-                verb = get_verb_inflection(verb, "PC");
+                verb = get_verb_inflection(verb, "PC", []);
             }
             if (reflexive && (person || gender || number)) {
                 if (person == "") {
@@ -675,15 +776,35 @@ function get_noun_inflection(word, form) {
     return word;
 }
 
-function get_verb_inflection(word, form) {
+function get_verb_inflection(word, form, terms) {
     space = word.indexOf(" ")
     if (space != -1) {
         first_word = word.substring(0, space);
         remainder = word.substring(space + 1);
         if (first_word == "really") {
-            return "really " + get_verb_inflection(remainder, form);
+            return "really " + get_verb_inflection(remainder, form, terms);
         }
-        return get_verb_inflection(first_word, form) + " " + remainder;
+        return get_verb_inflection(first_word, form, terms) + " " + remainder;
+    }
+    if (word == "be" && !terms.includes("Participle")) {
+        if (terms.includes("Present")) {
+            if (terms.includes("1st") && terms.includes("Singular")) {
+                return "am";
+            }
+            if (terms.includes("3rd") && terms.includes("Singular")) {
+                return "is";
+            }
+            return "are";
+        }
+        if (terms.includes("Imperfect")) {
+            if (terms.includes("1st") && terms.includes("Singular")) {
+                return "was";
+            }
+            if (terms.includes("3rd") && terms.includes("Singular")) {
+                return "was";
+            }
+            return "were";
+        }
     }
     results = get_conjugation(word);
     for (let i = 0; i < results[1].length; i++) {
