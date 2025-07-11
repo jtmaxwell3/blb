@@ -1,6 +1,17 @@
 var strongs_to_english_override = {
+    "G50": "be ignorant", // better than "do not know" for participle
+    "G268": "sinner", // better than "sinning"
+    "G976": "book", // better than "roll"
+    "G1624": "turn aside", // better than "wander"
+    "G1653": "show mercy", // bettern than "have compassion" for passives
+    "G1656": "mercy", // better than "pity"
     "G2003": "command", // better than "instruction"
     "G2596": "according to", // better than "down from"
+    "G3748": "which", // better than "whosoever"
+    "G3739": "which", // better than
+    "G3870": "encourage", // better than "summon"
+    "G4198": "go", // better than "travel"
+    "G5100": "some (one|thing)", // better than "any one"
     "G5547": "Christ", // better than "anointed"
     "H101": "bowl", // better translation than "vessel"
     "H119": "be red", // better for Qal than "redden"

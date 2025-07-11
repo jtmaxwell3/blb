@@ -2,22 +2,32 @@
 const conjugate = require('./conjugate.js')
 
 function run_test(description, gold) {
-    result = conjugate(description);
+    result = conjugate.conjugate(description);
     console.assert(result == gold, "\"" + result + "\"", "is not", "\"" + gold + "\"")
 }
 
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
-run_test(`Transliteration: ēn
+run_test(`Transliteration: eimi
 From the root εἰμί (G1510)
-Verb - Imperfect Active Indicative - 3rd Person Singular
-English: was`, "was")
+Verb - Present Active Indicative - 1st Person Singular
+English: am`, "[1s] am")
+
+run_test(`Transliteration: ēleēthēn
+From the root ἐλεέω (G1653)
+Verb - Aorist Passive Indicative - 1st Person Singular
+English: I was shown mercy`, "[1s] was shown mercy")
 
 run_test(`Transliteration: exetrapēsan
 From the root ἐκτρέπω (G1624)
 Verb - Aorist Passive Indicative - 3rd Person Plural
-English: have turned aside`, "[3s] have turned asides")
+English: have turned aside`, "[3p] were turned aside")
+
+run_test(`Transliteration: ēn
+From the root εἰμί (G1510)
+Verb - Imperfect Active Indicative - 3rd Person Singular
+English: was`, "[3s] was")
 
 run_test(`Transliteration: eidōs
 From the root εἴδω (G1492)

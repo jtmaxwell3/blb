@@ -71,6 +71,7 @@ def write_dictionary(dictionary, filename, var_name):
 def create_strongs_to_english():
     translation_dict = dict()
     read_morphological_lexicon(translation_dict)
+    read_strongs_greek_dictionary(translation_dict)
     datafilename = '../../../Hebrew_lexicon/_data/TBESH_lang.csv'
     with open(datafilename, mode='r') as file:
         csv_file = csv.reader(file)
@@ -96,10 +97,16 @@ def read_morphological_lexicon(translation_dict):
             if 'gloss' not in entry:
                 print("missing gloss in " + word + ": " + str(entry))
                 continue
-            strongs = 'G' + str(entry['strongs'])
-            translation = entry['gloss']
-            translation = get_short_morphological_translation(translation)
-            translation_dict[strongs] = translation
+            strongs_list = entry['strongs']
+            if not isinstance(strongs_list, list):
+                strongs_list = [ strongs_list ]
+            for strongs in strongs_list:
+                strongs = 'G' + str(strongs)
+                translation = entry['gloss']
+                translation = get_short_morphological_translation(translation)
+                if strongs in translation_dict and translation_dict[strongs] != translation:
+                    print("DUPLICATE STRONGS: " + strongs)
+                translation_dict[strongs] = translation
 
 
 def get_short_morphological_translation(translations):
@@ -133,6 +140,8 @@ def trim_morphological_translation(translation):
         return translation[4:]
     if translation.startswith("to "):
         return translation[3:]
+    if translation.startswith("am "):
+        return "be " + translation[3:]
     if translation.startswith("I am "):
         return "be " + translation[5:]
     if translation == "I am":
@@ -147,6 +156,8 @@ def read_strongs_greek_dictionary(translation_dict):
     with open(strongs_greek_dictionary, mode='r') as file:
         dictionary = json.load(file)
         for strongs in dictionary:
+            if strongs in translation_dict:
+                continue;
             if 'kjv_def' in dictionary[strongs]:
                 translation = dictionary[strongs]['kjv_def']
             else:
