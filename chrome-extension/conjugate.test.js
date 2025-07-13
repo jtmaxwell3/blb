@@ -9,20 +9,40 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: heauton
+From the root ἑαυτοῦ (G1438)
+Personal / Possessive Pronoun - Accusative Singular Masculine
+English: Himself`, "himself")
+
+run_test(`Transliteration: anthrōpōn
+From the root ἄνθρωπος (G444)
+Noun - Nominative Plural Masculine
+English: men`, "people [m]")
+
+run_test(`Transliteration: anthrōpōn
+From the root ἄνθρωπος (G444)
+Noun - Nominative Singular Masculine
+English: men`, "person [m]")
+
+run_test(`Transliteration: hōn
+From the root ὅς (G3739)
+Relative Pronoun - Genitive Plural Masculine
+English: Among these`, "(of) which [mp]")
+
 run_test(`Transliteration: eimi
 From the root εἰμί (G1510)
 Verb - Present Active Indicative - 1st Person Singular
-English: am`, "[1s] am")
+English: am`, "(I) am")
 
 run_test(`Transliteration: ēleēthēn
 From the root ἐλεέω (G1653)
 Verb - Aorist Passive Indicative - 1st Person Singular
-English: I was shown mercy`, "[1s] was shown mercy")
+English: I was shown mercy`, "(I) was shown mercy")
 
 run_test(`Transliteration: exetrapēsan
 From the root ἐκτρέπω (G1624)
 Verb - Aorist Passive Indicative - 3rd Person Plural
-English: have turned aside`, "[3p] were turned aside")
+English: have turned aside`, "(they) were turned aside")
 
 run_test(`Transliteration: ēn
 From the root εἰμί (G1510)
@@ -32,7 +52,7 @@ English: was`, "[3s] was")
 run_test(`Transliteration: eidōs
 From the root εἴδω (G1492)
 Verb - Perfect Active Participle - Nominative Singular Masculine
-English: realizing`, "[3s] knowing [m]")
+English: realizing`, "[s] knowing [m]")
 
 run_test(`Transliteration: biblos
 From the root βίβλος (G976)

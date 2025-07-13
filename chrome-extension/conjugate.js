@@ -50,10 +50,14 @@ function conjugate(description) {
     let forms = section2.split(";")
     if (language == "Greek" || language == "") {
         orig_prior_terms = prior_terms;
-        // console.log(description)
+        if (typeof window != 'undefined') {
+            console.log(description);
+        }
         conjugation = conjugate_Greek_as_English(transliteration, strongs, forms);
-        // console.log("=> " + conjugation);
-        print_change(strongs, forms, orig_prior_terms, conjugation);
+        if (typeof window != 'undefined') {
+            console.log("=> " + conjugation);
+            // print_change(strongs, forms, orig_prior_terms, conjugation);
+        }
         return conjugation;
     }
     return conjugate_Hebrew_as_English(transliteration, strongs, forms, language);
@@ -89,7 +93,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     let gcase = "";
     let gender = "";
     let number = "";
-    let person = 3;
+    let person = "";
     for (let j = 1; j < terms.length; j++) {
         let term = terms[j];
         if (term == "Accusative") {
@@ -114,16 +118,24 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
             person = 1;
         } else if (term == "2nd") {
             person = 2;
+        } else if (term == "3rd") {
+            person = 3;
         }
     }
     conjugation = word;
     if (terms.includes("Pronoun") && terms.includes("Personal")) {
-            if (word == "I") {
-                person = 1;
+        if (word.endsWith("self")) {
+            if (word == "himself") {
+                person = 3;
             }
-            if (word == "you") {
-                person = 2;
-            }
+            return get_reflexive_pronoun(person, gender, number);
+        }
+        if (word == "I") {
+            person = 1;
+        }
+        if (word == "you") {
+            person = 2;
+        }
         if (terms.includes("Nominative")) {
             return get_subject_pronoun(person, gender, number);
         } else if (terms.includes("Accusative")) {
@@ -173,7 +185,19 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     if (terms.includes("Verb") &&
         !terms.includes("Infinitive") &&
         !terms.includes("Imperative")) {
-        conjugation = "[" + person + number + "] " + conjugation;
+        let prefix = "";
+        if (person == "") {
+            prefix = "[" + number + "] ";
+        }
+        else if (gender == "" && person == "3" && number == "s") {
+            // Can't distinguish between he, she, and it.
+            prefix = "[" + person + number + "] ";
+        }
+        else {
+            let pronoun = get_subject_pronoun(person, gender, number, false);
+            prefix = "(" + pronoun + ") ";
+        }
+        conjugation = prefix + conjugation;
     }
     if (false && terms.includes("Verb") && !terms.includes("Imperative")) {
         if (person == 1 && number == "s") {
@@ -203,10 +227,11 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         conjugation = "(to) " + conjugation;
     }
     if (gender != "") {
-        if (terms.includes("Adjective")) {
-            conjugation += " [" + gender + number + "]";
-        } else {
+        if (terms.includes("Noun") || terms.includes("Verb")) {
+            // Number already included.
             conjugation += " [" + gender + "]";
+        } else {
+           conjugation += " [" + gender + number + "]";
         }
     }
     // Record relevant terms for the next word.
@@ -906,7 +931,7 @@ function get_object_pronoun(person, gender, number) {
         }
     } else if (person == "2") {
         return "you [" + gender + number + "]";
-    } else if (person == "3") {
+    } else if (person == "3" || person == "") {
         if (number == "s") {
             if (gender == "f") {
                 return "her";
@@ -1001,7 +1026,7 @@ function get_subject_pronoun(person, gender, number, implicit) {
             return "he";
         } else if (gender == "f") {
             return "she";
-        } else {
+        } else if (gender == "n") {
             return "it";
         }
     }
@@ -1021,15 +1046,26 @@ function get_English_for_Strongs(strongs, terms) {
         for (let i = 0; i < entry.length; i++) {
             let item = entry[i];
             if (typeof item == "string") {
+                // default translation.
                 return [item, terms]
             }
-            if (is_subset(item[1], terms)) {
-                if (!item[2]) {
-                    return [item[0], terms]
+            // Make a copy of terms so that it can be modified.
+            let new_terms = terms.slice();
+            // See if item[1] is a subset of terms.
+            let found = true;
+            for (let j = 0; j < item[1].length; j++) {
+                let index = terms.indexOf(item[1][j]);
+                if (index == -1) {
+                    found = false;
+                    break;
                 }
-                // Replace item[1] with item[2] in terms.
-                let new_terms = item[2].concat(terms.slice(item[1].length))
-                return [item[0], new_terms]
+                if (item[2]) {
+                    // Replace item[1][j] with item[2][j] in new_terms.
+                    new_terms[index] = item[2][j];
+                }
+             }
+            if (found) {
+                return [item[0], new_terms];
             }
         }
     }

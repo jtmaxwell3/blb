@@ -1,17 +1,28 @@
 var strongs_to_english_override = {
     "G50": "be ignorant", // better than "do not know" for participle
     "G268": "sinner", // better than "sinning"
+    "G444": [["people", ["Noun", "Plural"], ["Noun", "Singular"]], "person"],
+    "G506": "rebellious", // more common than "unruly"
     "G976": "book", // better than "roll"
+    "G1325": "give", // more common than "offer"
+    "G1391": "glory", // more common than "honor"
     "G1624": "turn aside", // better than "wander"
     "G1653": "show mercy", // bettern than "have compassion" for passives
     "G1656": "mercy", // better than "pity"
     "G2003": "command", // better than "instruction"
+    "G2169": "thanksgiving", // pluralizes better than "thankfulness"
+    "G2309": "want", // better than "will"
+    "G2570": "good", // more common than "beautiful"
     "G2596": "according to", // better than "down from"
+    "G3107": "blessed", // more common than "happy"
     "G3748": "which", // better than "whosoever"
     "G3739": "which", // better than
+    "G3767": "then",  // more distinct than "therefore"
     "G3870": "encourage", // better than "summon"
     "G4198": "go", // better than "travel"
-    "G5100": "some (one|thing)", // better than "any one"
+    "G5092": "honor", // more common than "price"
+    "G5100": "some", // better than "any one"
+    "G5228": "above/for",  // "for" more common than "above", but root is "above"
     "G5547": "Christ", // better than "anointed"
     "H101": "bowl", // better translation than "vessel"
     "H119": "be red", // better for Qal than "redden"
