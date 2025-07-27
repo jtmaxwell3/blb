@@ -9,6 +9,68 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: apesterēmenōn
+From the root ἀποστερέω (G650)
+Verb - Perfect Passive Participle - Genitive Plural Masculine
+English: deprived`, "(of) [p] having been robbed [m]")
+
+run_test(`Transliteration: autou
+From the root αὐτός (G846)
+Personal / Possessive Pronoun - Genitive Singular Masculine
+English: of his`, "his")
+
+run_test(`Transliteration: tethnēken
+From the root θνῄσκω (G2348)
+Verb - Perfect Active Indicative - 3rd Person Singular
+English: is dead`, "[3s] has been dying")
+
+run_test(`Transliteration: manthanetōsan
+From the root μανθάνω (G3129)
+Verb - Present Active Imperative - 3rd Person Plural`, "(they) learn!")
+
+run_test(`Transliteration: seauton
+From the root σεαυτοῦ (G4572)
+Personal / Possessive Pronoun - Accusative Singular Masculine
+English: yourself`, "yourself [m]")
+
+run_test(`Transliteration: esē
+From the root εἰμί (G1510)
+Verb - Future Middle Indicative - 2nd Person Singular
+English: you will be`, "(you [s]) will be")
+
+run_test(`Transliteration: kekaustēriasmenōn
+From the root καυστηριάζω (G2743)
+Verb - Perfect Passive Participle - Genitive Plural Masculine
+English: seared as with a branding iron,`, "(of) [p] having been seared with a hot iron [m]")
+
+run_test(`Transliteration: phanerōthē
+From the root φανερόω (G5319)
+Verb - Aorist Passive Subjunctive - 3rd Person Singular
+English: be revealed`, "[3s] may be revealed")
+
+run_test(`Transliteration: eidēs
+From the root εἴδω (G1492)
+Verb - Perfect Active Subjunctive - 2nd Person Singular
+English: you will know`, "(you [s]) may have known")
+
+run_test(`Transliteration: heautois
+From the root ἑαυτοῦ (G1438)
+Personal / Possessive Pronoun - Dative Plural Masculine
+English: for themselves`, "(to) themselves")
+
+run_test(`Transliteration: houtoi
+From the root οὗτος (G3778)
+Demonstrative Pronoun -  Nominative Masculine Plural
+English: These men`, "these [m]")
+run_test(`Transliteration: gegonen
+From the root γίνομαι (G1096)
+Verb - Perfect Active Indicative - 3rd Person Singular`, "[3s] has become")
+
+run_test(`Transliteration: prepei
+From the root πρέπω (G4241)
+Verb - Present Active Indicative - 3rd Person Singular
+English: as is proper`, "[3s] becomes")
+
 run_test(`Transliteration: heauton
 From the root ἑαυτοῦ (G1438)
 Personal / Possessive Pronoun - Accusative Singular Masculine
@@ -52,7 +114,7 @@ English: was`, "[3s] was")
 run_test(`Transliteration: eidōs
 From the root εἴδω (G1492)
 Verb - Perfect Active Participle - Nominative Singular Masculine
-English: realizing`, "[s] knowing [m]")
+English: realizing`, "[s] having known [m]")
 
 run_test(`Transliteration: biblos
 From the root βίβλος (G976)

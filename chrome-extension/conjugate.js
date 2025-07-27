@@ -125,10 +125,23 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     conjugation = word;
     if (terms.includes("Pronoun") && terms.includes("Personal")) {
         if (word.endsWith("self")) {
+            if (word.endsWith("myself")) {
+                person = 1;
+            }
+            if (word.endsWith("yourself")) {
+                person = 2;
+            }
             if (word == "himself") {
                 person = 3;
             }
-            return get_reflexive_pronoun(person, gender, number);
+            conjugation = get_reflexive_pronoun(person, gender, number);
+            if (terms.includes("Genitive")) {
+                conjugation = "(of) " + conjugation;
+            } else if (terms.includes("Dative")) {
+                conjugation = "(to) " + conjugation;
+            }
+            record_prior_terms(word, terms);
+            return conjugation;
         }
         if (word == "I") {
             person = 1;
@@ -136,28 +149,56 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         if (word == "you") {
             person = 2;
         }
+        if (word == "he") {
+            person = 3;
+        }
         if (terms.includes("Nominative")) {
+            record_prior_terms(word, terms);
             return get_subject_pronoun(person, gender, number);
         } else if (terms.includes("Accusative")) {
+            record_prior_terms(word, terms);
             return get_object_pronoun(person, gender, number);
         } else if (terms.includes("Genitive")) {
+            record_prior_terms(word, terms);
             return get_possessive_pronoun(person, gender, number);
         } else if (terms.includes("Dative")) {
             conjugation = get_object_pronoun(person, gender, number);
-            if (!(prior_terms.includes("Dative")) &&
-                !(prior_terms.includes("Conjunction")) &&
-                !(prior_terms.includes("Preposition"))) {
+            if (prep_allowed_by_prior_terms(terms)) {
                 conjugation = "(to) " + conjugation;
             }
+            record_prior_terms(word, terms);
             return conjugation;
         }
     }
+    if (terms.includes("Pronoun") && terms.includes("Demonstrative")) {
+        if (word == "this") {
+            if (number == "p") {
+                word = "these";
+            }
+            conjugation = word;
+        }
+        if (word == "that") {
+            if (number == "p") {
+                word = "those";
+            }
+            conjugation = word;
+        }
+    }
     // VERBS
-    // Handle passive first.
+    // Handle passive voice before everything.
     if (terms.includes("Passive")) {
         conjugation = "be " + get_verb_inflection(conjugation, "PP", terms);
     }
-    // Handle otheer types of verbs.
+
+    if (terms.includes("Perfect")) {
+        conjugation = "have " + get_verb_inflection(conjugation, "PP", terms);
+    }
+
+    if (terms.includes("Future")) {
+        conjugation = "will " + conjugation;
+    }
+
+    // Handle moods.
     if (terms.includes("Infinitive")) {
         conjugation = "to " + conjugation;
     }
@@ -168,29 +209,32 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         conjugation = get_verb_inflection(conjugation, "PC", terms);
     }
     else if (terms.includes("Subjunctive")) {
+        // Handle subjunctive after perfect.
         conjugation = "may " + conjugation;
     }
-    else if (terms.includes("Aorist") || terms.includes("Imperfect")) {
-        // Indicative
-        conjugation = get_verb_inflection(conjugation, "PA", terms);
-    }
-    else if (terms.includes("Present")) {
-        // Indicative
-        if (person == 3 && number == "s") {
-            conjugation = get_verb_inflection(conjugation, "TS", terms);
-        } else if (conjugation.startsWith("be ") || conjugation == "be") {
-            conjugation = get_verb_inflection(conjugation, "", terms);
+    else if (terms.includes("Indicative")) {
+        // Handle tense/aspect.
+        if (terms.includes("Aorist") || terms.includes("Imperfect")) {
+            // Past tense indicative
+            conjugation = get_verb_inflection(conjugation, "PA", terms);
+        }
+        else if (terms.includes("Present") || terms.includes("Perfect")) {
+            // Indicative
+            if (person == 3 && number == "s") {
+                conjugation = get_verb_inflection(conjugation, "TS", terms);
+            } else if (conjugation.startsWith("be ") || conjugation == "be") {
+                conjugation = get_verb_inflection(conjugation, "", terms);
+            }
         }
     }
+
     if (terms.includes("Verb") &&
-        !terms.includes("Infinitive") &&
-        !terms.includes("Imperative")) {
+        !terms.includes("Infinitive")) {
         let prefix = "";
         if (person == "") {
             prefix = "[" + number + "] ";
         }
         else if (gender == "" && person == "3" && number == "s") {
-            // Can't distinguish between he, she, and it.
             prefix = "[" + person + number + "] ";
         }
         else {
@@ -199,42 +243,35 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         }
         conjugation = prefix + conjugation;
     }
-    if (false && terms.includes("Verb") && !terms.includes("Imperative")) {
-        if (person == 1 && number == "s") {
-              conjugation = "(I) " + conjugation;
-        }
-        if (person == 1 && number == "p") {
-              conjugation = "(we) " + conjugation;
-        }
-        if (person == 2) {
-            conjugation = "(you) " + conjugation;
-        }
-    }
+
     // NOUNS
     if (terms.includes("Noun") && number == "p") {
         conjugation = get_noun_inflection(conjugation, "PL");
     }
     if (gcase == "g" &&
-        !(prior_terms.includes("Genitive")) &&
-        !(prior_terms.includes("Conjunction")) &&
-        !(prior_terms.includes("Preposition"))) {
+        prep_allowed_by_prior_terms(terms)) {
         conjugation = "(of) " + conjugation;
     }
     if (gcase == "d" &&
-        !(prior_terms.includes("Dative")) &&
-        !(prior_terms.includes("Conjunction")) &&
-        !(prior_terms.includes("Preposition"))) {
+        prep_allowed_by_prior_terms(terms)) {
         conjugation = "(to) " + conjugation;
     }
     if (gender != "") {
-        if (terms.includes("Noun") || terms.includes("Verb")) {
+        if (terms.includes("Noun") ||
+            terms.includes("Verb") ||
+            terms.includes("Demonstrative")) {
             // Number already included.
             conjugation += " [" + gender + "]";
         } else {
            conjugation += " [" + gender + number + "]";
         }
     }
+    record_prior_terms(word, terms);
     // Record relevant terms for the next word.
+    return conjugation;
+}
+
+function record_prior_terms(word, terms) {
     prior_terms = [];
     if (terms.includes("Genitive")) {
         prior_terms.push("Genitive");
@@ -242,13 +279,33 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     if (terms.includes("Dative")) {
         prior_terms.push("Dative");
     }
+    if (terms.includes("article")) {
+        prior_terms.push("article");
+    }
     if (terms.includes("Preposition")) {
         prior_terms.push("Preposition");
     }
     if (word == "and") {
         prior_terms.push("Conjunction");
     }
-    return conjugation;
+}
+
+function prep_allowed_by_prior_terms(terms) {
+    // Should we include (of) or (to) based on the current terms
+    // and the prior terms?
+    if (terms.includes("article")) {
+        // Always include (of) or (to) if this is an article.
+        return true;
+    }
+    if (prior_terms.includes("article")) {
+        // Never include (of) or (to) if the prior word was an article.
+        return false;
+    }
+    if (prior_terms.includes("Preposition")) {
+        // Never include (of) or (to) if the prior word was a preposition.
+        return false;
+    }
+    return true;
 }
 
 function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) {
@@ -847,6 +904,14 @@ function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) 
     return result;
 }
 
+function get_first_word(conjugation) {
+    let space = conjugation.indexOf(" ")
+    if (space != -1) {
+        return conjugation.substring(0, space);
+    }
+    return conjugation;
+}
+
 function get_noun_inflection(word, form) {
     if (form == "PL") {
         if (word == "cattle") {
@@ -891,6 +956,9 @@ function get_verb_inflection(word, form, terms) {
         }
         return get_verb_inflection(first_word, form, terms) + " " + remainder;
     }
+    if (word == "be" && terms.includes("Perfect")) {
+        return "been";
+    }
     if (word == "be" && terms.includes("Indicative")) {
         if (terms.includes("Present")) {
             if (terms.includes("1st") && terms.includes("Singular")) {
@@ -918,6 +986,10 @@ function get_verb_inflection(word, form, terms) {
         if (result.substring(0, 3) == form + ":") {
             return result.substring(3)
         }
+    }
+    if (form == "PP") {
+        // Use past for past participle.
+        return get_verb_inflection(word, "PA", terms);
     }
     return word;
 }
