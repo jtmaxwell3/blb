@@ -2,6 +2,7 @@
 const conjugate = require('./conjugate.js')
 
 function run_test(description, gold) {
+    conjugate.set_prior_terms([]);
     result = conjugate.conjugate(description);
     console.assert(result == gold, "\"" + result + "\"", "is not", "\"" + gold + "\"")
 }
@@ -9,10 +10,25 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: pathēmasin
+From the root πάθημα (G3804)
+Noun - Dative Plural Neuter
+English: [and] sufferings`, "(to) sufferings [dn]")
+
+run_test(`Transliteration: epaischynthē
+From the root ἐπαισχύνομαι (G1870)
+Verb - Aorist Passive Subjunctive - 3rd Person Singular
+English: is ashamed`, "[3s] may be ashamed")
+
+run_test(`Transliteration: boulomenoi
+From the root βούλομαι (G1014)
+Verb - Present Middle Participle - Nominative Plural Masculine
+English: want`, "[p] wanting [nm]")
+
 run_test(`Transliteration: apesterēmenōn
 From the root ἀποστερέω (G650)
 Verb - Perfect Passive Participle - Genitive Plural Masculine
-English: deprived`, "(of) [p] having been robbed [m]")
+English: deprived`, "(of) [p] having been robbed [gm]")
 
 run_test(`Transliteration: autou
 From the root αὐτός (G846)
@@ -41,7 +57,7 @@ English: you will be`, "(you [s]) will be")
 run_test(`Transliteration: kekaustēriasmenōn
 From the root καυστηριάζω (G2743)
 Verb - Perfect Passive Participle - Genitive Plural Masculine
-English: seared as with a branding iron,`, "(of) [p] having been seared with a hot iron [m]")
+English: seared as with a branding iron,`, "(of) [p] having been seared with a hot iron [gm]")
 
 run_test(`Transliteration: phanerōthē
 From the root φανερόω (G5319)
@@ -61,7 +77,7 @@ English: for themselves`, "(to) themselves")
 run_test(`Transliteration: houtoi
 From the root οὗτος (G3778)
 Demonstrative Pronoun -  Nominative Masculine Plural
-English: These men`, "these [m]")
+English: These men`, "these [nm]")
 run_test(`Transliteration: gegonen
 From the root γίνομαι (G1096)
 Verb - Perfect Active Indicative - 3rd Person Singular`, "[3s] has become")
@@ -79,17 +95,17 @@ English: Himself`, "himself")
 run_test(`Transliteration: anthrōpōn
 From the root ἄνθρωπος (G444)
 Noun - Nominative Plural Masculine
-English: men`, "people [m]")
+English: men`, "people [nm]")
 
 run_test(`Transliteration: anthrōpōn
 From the root ἄνθρωπος (G444)
 Noun - Nominative Singular Masculine
-English: men`, "person [m]")
+English: men`, "person [nm]")
 
 run_test(`Transliteration: hōn
 From the root ὅς (G3739)
 Relative Pronoun - Genitive Plural Masculine
-English: Among these`, "(of) which [mp]")
+English: Among these`, "(of) which [gpm]")
 
 run_test(`Transliteration: eimi
 From the root εἰμί (G1510)
@@ -114,12 +130,12 @@ English: was`, "[3s] was")
 run_test(`Transliteration: eidōs
 From the root εἴδω (G1492)
 Verb - Perfect Active Participle - Nominative Singular Masculine
-English: realizing`, "[s] having known [m]")
+English: realizing`, "[s] having known [nm]")
 
 run_test(`Transliteration: biblos
 From the root βίβλος (G976)
 Noun - Nominative Singular Feminine
-English: The record`, "book [f]")
+English: The record`, "book [nf]")
 
 run_test(`Transliteration: hēmōn
 From the root ἐγώ (G1473)

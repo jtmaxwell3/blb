@@ -9,6 +9,10 @@ if (typeof window === 'undefined') {
 
 var prior_terms = [];
 
+function set_prior_terms(terms) {
+    prior_terms = terms;
+}
+
 function conjugate(description) {
     if  (!description) {
         return ""
@@ -135,9 +139,9 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
                 person = 3;
             }
             conjugation = get_reflexive_pronoun(person, gender, number);
-            if (terms.includes("Genitive")) {
+            if (prep_allowed_by_prior_terms(terms, "Genitive")) {
                 conjugation = "(of) " + conjugation;
-            } else if (terms.includes("Dative")) {
+            } else if (prep_allowed_by_prior_terms(terms, "Dative")) {
                 conjugation = "(to) " + conjugation;
             }
             record_prior_terms(word, terms);
@@ -155,15 +159,12 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         if (terms.includes("Nominative")) {
             record_prior_terms(word, terms);
             return get_subject_pronoun(person, gender, number);
-        } else if (terms.includes("Accusative")) {
-            record_prior_terms(word, terms);
-            return get_object_pronoun(person, gender, number);
-        } else if (terms.includes("Genitive")) {
-            record_prior_terms(word, terms);
+        } else if (prep_allowed_by_prior_terms(terms, "Genitive")) {
+             record_prior_terms(word, terms);
             return get_possessive_pronoun(person, gender, number);
-        } else if (terms.includes("Dative")) {
+        } else {
             conjugation = get_object_pronoun(person, gender, number);
-            if (prep_allowed_by_prior_terms(terms)) {
+            if (prep_allowed_by_prior_terms(terms, "Dative")) {
                 conjugation = "(to) " + conjugation;
             }
             record_prior_terms(word, terms);
@@ -186,7 +187,8 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     }
     // VERBS
     // Handle passive voice before everything.
-    if (terms.includes("Passive")) {
+    // Don't passivize if it is already passive.
+    if (terms.includes("Passive") && get_first_word(conjugation) != "be") {
         conjugation = "be " + get_verb_inflection(conjugation, "PP", terms);
     }
 
@@ -248,12 +250,10 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     if (terms.includes("Noun") && number == "p") {
         conjugation = get_noun_inflection(conjugation, "PL");
     }
-    if (gcase == "g" &&
-        prep_allowed_by_prior_terms(terms)) {
+    if (prep_allowed_by_prior_terms(terms, "Genitive")) {
         conjugation = "(of) " + conjugation;
     }
-    if (gcase == "d" &&
-        prep_allowed_by_prior_terms(terms)) {
+    if (prep_allowed_by_prior_terms(terms, "Dative")) {
         conjugation = "(to) " + conjugation;
     }
     if (gender != "") {
@@ -261,9 +261,9 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
             terms.includes("Verb") ||
             terms.includes("Demonstrative")) {
             // Number already included.
-            conjugation += " [" + gender + "]";
+            conjugation += " [" + gcase + gender + "]";
         } else {
-           conjugation += " [" + gender + number + "]";
+           conjugation += " [" + gcase + number + gender + "]";
         }
     }
     record_prior_terms(word, terms);
@@ -290,22 +290,17 @@ function record_prior_terms(word, terms) {
     }
 }
 
-function prep_allowed_by_prior_terms(terms) {
+function prep_allowed_by_prior_terms(terms, gcase) {
     // Should we include (of) or (to) based on the current terms
     // and the prior terms?
-    if (terms.includes("article")) {
-        // Always include (of) or (to) if this is an article.
-        return true;
-    }
-    if (prior_terms.includes("article")) {
-        // Never include (of) or (to) if the prior word was an article.
+    if (!terms.includes(gcase)) {
         return false;
     }
     if (prior_terms.includes("Preposition")) {
         // Never include (of) or (to) if the prior word was a preposition.
         return false;
     }
-    return true;
+    return !prior_terms.includes(gcase);
 }
 
 function conjugate_Hebrew_as_English(transliteration, strongs, forms, language) {
@@ -926,6 +921,9 @@ function get_noun_inflection(word, form) {
         if (word == "praise") {
             return "praises";
         }
+        if (word == "suffering") {
+            return "sufferings";
+        }
         if (word == "them") {
             return word;
         }
@@ -986,6 +984,9 @@ function get_verb_inflection(word, form, terms) {
         if (result.substring(0, 3) == form + ":") {
             return result.substring(3)
         }
+    }
+    if (word == "will" && form == "PC") {
+        return "willing";
     }
     if (form == "PP") {
         // Use past for past participle.
@@ -1161,6 +1162,7 @@ function is_subset(array1, array2) {
 if (typeof window === 'undefined') {
     // This is so we can run tests using node.js.
     module.exports.conjugate = conjugate;
+    module.exports.set_prior_terms = set_prior_terms;
     module.exports.get_English_for_Strongs = get_English_for_Strongs;
     module.exports.strongs_to_english = node_strongs_to_english;
 }
