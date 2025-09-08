@@ -127,7 +127,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         }
     }
     conjugation = word;
-    if (terms.includes("Pronoun") && terms.includes("Personal")) {
+    if (terms.includes("Pronoun") && terms.includes("Personal") && strongs != "G240") {
         if (word.endsWith("self")) {
             if (word.endsWith("myself")) {
                 person = 1;
@@ -159,7 +159,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         if (terms.includes("Nominative")) {
             record_prior_terms(word, terms);
             return get_subject_pronoun(person, gender, number);
-        } else if (prep_allowed_by_prior_terms(terms, "Genitive")) {
+        } else if (terms.includes("Genitive") && !prior_terms.includes("Preposition")) {
              record_prior_terms(word, terms);
             return get_possessive_pronoun(person, gender, number);
         } else {
@@ -244,6 +244,10 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
             prefix = "(" + pronoun + ") ";
         }
         conjugation = prefix + conjugation;
+    }
+
+    if (terms.includes("Comparative")) {
+        conjugation = get_comparative(conjugation);
     }
 
     // NOUNS
@@ -907,10 +911,23 @@ function get_first_word(conjugation) {
     return conjugation;
 }
 
+function get_comparative(word) {
+    if (word == "great") {
+        return "greater";
+    }
+    if (word == "little") {
+        return "littler";
+    }
+    return "more " + word;
+}
+
 function get_noun_inflection(word, form) {
     if (form == "PL") {
         if (word == "cattle") {
             return word;
+        }
+        if (word == "glory") {
+            return "glories";
         }
         if (word == "heaven") {
             return "heavens";

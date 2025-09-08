@@ -10,6 +10,31 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: meizōn
+From the root μέγας (G3173)
+Adjective - Nominative Singular Masculine - Comparative
+English: greater`, "greater [nsm]")
+
+run_test(`Transliteration: leproi
+From the root λεπρός (G3015)
+Adjective - Nominative Plural Masculine
+English: [the] lepers`, "leprous [npm]")
+
+run_test(`Transliteration: doxas
+From the root δόξα (G1391)
+Noun - Accusative Plural Feminine
+English: the glories`, "glories [af]")
+
+run_test(`Transliteration: ema
+From the root ἐμός (G1699)
+Adjective - Accusative Plural Neuter
+English: my`, "my [apn]")
+
+run_test(`Transliteration: allēlous
+From the root ἀλλήλων (G240)
+Personal / Possessive Pronoun - Accusative Plural Masculine
+English: one another.`, "one another [apm]")
+
 run_test(`Transliteration: pathēmasin
 From the root πάθημα (G3804)
 Noun - Dative Plural Neuter
@@ -62,7 +87,7 @@ English: seared as with a branding iron,`, "(of) [p] having been seared with a h
 run_test(`Transliteration: phanerōthē
 From the root φανερόω (G5319)
 Verb - Aorist Passive Subjunctive - 3rd Person Singular
-English: be revealed`, "[3s] may be revealed")
+English: be revealed`, "[3s] may be manifested")
 
 run_test(`Transliteration: eidēs
 From the root εἴδω (G1492)
@@ -85,7 +110,7 @@ Verb - Perfect Active Indicative - 3rd Person Singular`, "[3s] has become")
 run_test(`Transliteration: prepei
 From the root πρέπω (G4241)
 Verb - Present Active Indicative - 3rd Person Singular
-English: as is proper`, "[3s] becomes")
+English: as is proper`, "[3s] is fitting")
 
 run_test(`Transliteration: heauton
 From the root ἑαυτοῦ (G1438)
