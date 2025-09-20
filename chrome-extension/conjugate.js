@@ -31,7 +31,15 @@ function conjugate(description) {
     }
     if (pos2 == -1) {
         language = "";
-        pos2 = description.indexOf(")") + 1;
+        // Look for (Gxxx) or (Hxxx).
+        let prefixes = ["(G", "(H"];
+        for (let i = 0; i < 2; i++) {
+            let pos4 = description.indexOf(prefixes[i]);
+            if (pos4 > 0) {
+                // Set pos2 to after (Gxxx)/(Hxxx).
+                pos2 = description.indexOf(")", pos4) + 1;
+            }
+        }
     }
     if (pos3 == -1) {
         pos3 = description.length;
@@ -46,7 +54,7 @@ function conjugate(description) {
     // The Strong's number will be surrounded by parentheses.
     for (let i = 5; i < words.length; i++) {
         strongs = words[i];
-        if (strongs[0] == '(') {
+        if (strongs[0] == '(' && (strongs[1] == "G" || strongs[1] == "H")) {
             strongs = strongs.substring(1, strongs.length - 1);
             break;
         }
@@ -147,7 +155,12 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
             record_prior_terms(word, terms);
             return conjugation;
         }
+        conjugation = "";
         if (word == "I") {
+            person = 1;
+        }
+        if (word == "also") {
+            conjugation = "and ";
             person = 1;
         }
         if (word == "you") {
@@ -158,12 +171,12 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         }
         if (terms.includes("Nominative")) {
             record_prior_terms(word, terms);
-            return get_subject_pronoun(person, gender, number);
+            return conjugation + get_subject_pronoun(person, gender, number);
         } else if (terms.includes("Genitive") && !prior_terms.includes("Preposition")) {
              record_prior_terms(word, terms);
-            return get_possessive_pronoun(person, gender, number);
+            return conjugation + get_possessive_pronoun(person, gender, number);
         } else {
-            conjugation = get_object_pronoun(person, gender, number);
+            conjugation = conjugation + get_object_pronoun(person, gender, number);
             if (prep_allowed_by_prior_terms(terms, "Dative")) {
                 conjugation = "(to) " + conjugation;
             }
@@ -945,6 +958,9 @@ function get_noun_inflection(word, form) {
             return word;
         }
         if (word == "these") {
+            return word;
+        }
+        if (word == "Sodom") {
             return word;
         }
         if (word == "water") {

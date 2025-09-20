@@ -10,6 +10,16 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: houtōs
+From the root οὕτω(ς) (G3779)
+Adverb
+English: such`, "so")
+
+run_test(`Transliteration: kagō
+From the root κἀγώ (G2504)
+Personal / Possessive Pronoun - Nominative Singular
+English: and I`, "and I")
+
 run_test(`Transliteration: meizōn
 From the root μέγας (G3173)
 Adjective - Nominative Singular Masculine - Comparative
