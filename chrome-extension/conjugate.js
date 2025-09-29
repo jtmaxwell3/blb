@@ -209,6 +209,14 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         conjugation = "have " + get_verb_inflection(conjugation, "PP", terms);
     }
 
+    if (terms.includes("Pluperfect")) {
+        conjugation = "had " + get_verb_inflection(conjugation, "PP", terms);
+    }
+
+    if (terms.includes("Imperfect") && conjugation != "be") {
+        conjugation = "having " + get_verb_inflection(conjugation, "PP", terms);
+    }
+
     if (terms.includes("Future")) {
         conjugation = "will " + conjugation;
     }
@@ -229,7 +237,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     }
     else if (terms.includes("Indicative")) {
         // Handle tense/aspect.
-        if (terms.includes("Aorist") || terms.includes("Imperfect")) {
+        if (terms.includes("Aorist") || (terms.includes("Imperfect") && word == "be")) {
             // Past tense indicative
             conjugation = get_verb_inflection(conjugation, "PA", terms);
         }

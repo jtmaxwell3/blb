@@ -10,6 +10,16 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: egnōkeite
+From the root γινώσκω (G1097)
+Verb - Pluperfect Active Indicative - 2nd Person Plural
+English: you had known`, "(you [p]) had known")
+
+run_test(`Transliteration: paredidou
+From the root παραδίδωμι (G3860)
+Verb - Imperfect Active Indicative - 3rd Person Singular
+English: kept entrusting [Himself]`, "[3s] having delivered")
+
 run_test(`Transliteration: houtōs
 From the root οὕτω(ς) (G3779)
 Adverb
