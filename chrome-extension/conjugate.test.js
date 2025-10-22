@@ -10,6 +10,16 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: theloi
+From the root θέλω (G2309)
+Verb - Present Active Optative - 3rd Person Singular
+English: should will it so,`, "[3s] may want")
+
+run_test(`Transliteration: kakōsōn
+From the root κακόω (G2559)
+Verb - Future Active Participle - Nominative Singular Masculine
+English: to harm`, "[s] will be mistreating [nm]")
+
 run_test(`Transliteration: egnōkeite
 From the root γινώσκω (G1097)
 Verb - Pluperfect Active Indicative - 2nd Person Plural

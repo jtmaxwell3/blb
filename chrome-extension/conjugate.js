@@ -205,6 +205,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         conjugation = "be " + get_verb_inflection(conjugation, "PP", terms);
     }
 
+    // Handle tense.
     if (terms.includes("Perfect")) {
         conjugation = "have " + get_verb_inflection(conjugation, "PP", terms);
     }
@@ -218,6 +219,9 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     }
 
     if (terms.includes("Future")) {
+        if (terms.includes("Participle")) {
+            conjugation = "be " + get_verb_inflection(conjugation, "PC", terms);
+        }
         conjugation = "will " + conjugation;
     }
 
@@ -228,10 +232,10 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     else if (terms.includes("Imperative")) {
         conjugation = conjugation + "!";
     }
-    else if (terms.includes("Participle")) {
+    else if (terms.includes("Participle") && !terms.includes("Future")) {
         conjugation = get_verb_inflection(conjugation, "PC", terms);
     }
-    else if (terms.includes("Subjunctive")) {
+    else if (terms.includes("Subjunctive") || terms.includes("Optative")) {
         // Handle subjunctive after perfect.
         conjugation = "may " + conjugation;
     }
