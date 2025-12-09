@@ -10,6 +10,26 @@ function run_test(description, gold) {
 console.log("Running conjugate.test.js.")
 
 // Use back tics to allow carriage returns.
+run_test(`Transliteration: eskandalizonto
+From the root σκανδαλίζω (G4624)
+Verb - Imperfect Passive Indicative - 3rd Person Plural
+English: they took offense`, "(they) having been caused to stumble")
+
+run_test(`Transliteration: hagiōtatē
+From the root ἅγιος (G40)
+Adjective - Dative Singular Feminine - Superlative
+English: most holy`, "(to) most holy [dsf]")
+
+run_test(`Transliteration: hamartōloi
+From the root ἁμαρτωλός (G268)
+Adjective - Nominative Plural Masculine
+English: sinners`, "sinner(s) [npm]")
+
+run_test(`Transliteration: apolesthai
+From the root ἀπόλλυμι (G622)
+Verb - Aorist Middle Infinitive
+English: to perish`, "to destroy (self)")
+
 run_test(`Transliteration: theloi
 From the root θέλω (G2309)
 Verb - Present Active Optative - 3rd Person Singular
@@ -107,7 +127,7 @@ English: yourself`, "yourself [m]")
 run_test(`Transliteration: esē
 From the root εἰμί (G1510)
 Verb - Future Middle Indicative - 2nd Person Singular
-English: you will be`, "(you [s]) will be")
+English: you will be`, "(you [s]) will be (yourself)")
 
 run_test(`Transliteration: kekaustēriasmenōn
 From the root καυστηριάζω (G2743)
@@ -180,7 +200,7 @@ English: have turned aside`, "(they) were turned aside")
 run_test(`Transliteration: ēn
 From the root εἰμί (G1510)
 Verb - Imperfect Active Indicative - 3rd Person Singular
-English: was`, "[3s] was")
+English: was`, "[3s] having been")
 
 run_test(`Transliteration: eidōs
 From the root εἴδω (G1492)

@@ -214,7 +214,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         conjugation = "had " + get_verb_inflection(conjugation, "PP", terms);
     }
 
-    if (terms.includes("Imperfect") && conjugation != "be") {
+    if (terms.includes("Imperfect")) {
         conjugation = "having " + get_verb_inflection(conjugation, "PP", terms);
     }
 
@@ -241,7 +241,7 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
     }
     else if (terms.includes("Indicative")) {
         // Handle tense/aspect.
-        if (terms.includes("Aorist") || (terms.includes("Imperfect") && word == "be")) {
+        if (terms.includes("Aorist")) {
             // Past tense indicative
             conjugation = get_verb_inflection(conjugation, "PA", terms);
         }
@@ -271,13 +271,28 @@ function conjugate_Greek_as_English(transliteration, strongs, forms) {
         conjugation = prefix + conjugation;
     }
 
+    if (terms.includes("Middle") && !terms.includes("Participle")) {
+        let pronoun = get_reflexive_pronoun(person, gender, number);
+        let suffix = " (" + pronoun + ")";
+        conjugation = conjugation + suffix;
+    }
+
     if (terms.includes("Comparative")) {
         conjugation = get_comparative(conjugation);
     }
+    if (terms.includes("Superlative")) {
+        conjugation = get_superlative(conjugation);
+    }
 
-    // NOUNS
+    // NOUNS AND ADJECTIVES
     if (terms.includes("Noun") && number == "p") {
         conjugation = get_noun_inflection(conjugation, "PL");
+    }
+    if (terms.includes("Adjective") && number == "p") {
+        const nouns = ["sinner"];
+        if (nouns.includes(conjugation)) {
+            conjugation = conjugation + "(s)";
+        }
     }
     if (prep_allowed_by_prior_terms(terms, "Genitive")) {
         conjugation = "(of) " + conjugation;
@@ -946,6 +961,16 @@ function get_comparative(word) {
     return "more " + word;
 }
 
+function get_superlative(word) {
+    if (word == "great") {
+        return "greatest";
+    }
+    if (word == "little") {
+        return "littlest";
+    }
+    return "most " + word;
+}
+
 function get_noun_inflection(word, form) {
     if (form == "PL") {
         if (word == "cattle") {
@@ -998,6 +1023,9 @@ function get_verb_inflection(word, form, terms) {
             return "really " + get_verb_inflection(remainder, form, terms);
         }
         return get_verb_inflection(first_word, form, terms) + " " + remainder;
+    }
+    if (word == "be" && form == "PP") {
+        return "been";
     }
     if (word == "be" && terms.includes("Perfect")) {
         return "been";
@@ -1100,6 +1128,13 @@ function get_reflexive_pronoun(person, gender, number) {
             return "ourselves";
         }
     } else if (person == "2") {
+        if (gender == "") {
+            if (number == "s") {
+                return "yourself";
+            } else {
+                return "yourselves";
+            }
+        }
         if (number == "s") {
            return "yourself [" + gender + "]";
         } else {
@@ -1120,7 +1155,7 @@ function get_reflexive_pronoun(person, gender, number) {
         }
     }
     console.log("Unknown reflexive pronoun: " + person + gender + number);
-    return "???"
+    return "self"
 }
 
 function get_subject_pronoun(person, gender, number, implicit) {
